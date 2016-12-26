@@ -10,12 +10,18 @@ https://www.raspberrypi.org/learning/sense-hat-data-logger/worksheet/
 # Requirements
 
 Raspberry Pi
+
 Sense Hat
+
 Raspbian Operating System (I used the Noobs card)
+
 Racing car (Optional, but cool)
 
 
 # Dependencies
+Make sure you have Python installed
+
+sudo apt-get install python3-pip
 
 Before running the code you need to
 sudo pip-3.2 install pillow
