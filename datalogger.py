@@ -10,12 +10,12 @@ from datetime import datetime
 #### Functions ####
 
 def get_sense_data():
-sense_data=[]
+  sense_data=[]
 
-sense_data.append(sense.get_temperature_from_humidity())
-sense_data.append(sense.get_temperature_from_pressure())
-sense_data.append(sense.get_humidity())
-sense_data.append(sense.get_pressure())
+  sense_data.append(sense.get_temperature_from_humidity())
+  sense_data.append(sense.get_temperature_from_pressure())
+  sense_data.append(sense.get_humidity())
+  sense_data.append(sense.get_pressure())
   
   o = sense.get_orientation()
   yaw = o["yaw"]
@@ -41,9 +41,9 @@ sense_data.append(sense.get_pressure())
   gyro_z = gyro["z"]
   sense_data.extend([gyro_x,gyro_y,gyro_z])
 
-sense_data.append(datetime.now())
+  sense_data.append(datetime.now())
 
-return sense_data
+  return sense_data
   
   
 
