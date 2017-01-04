@@ -61,7 +61,6 @@ running = True
 datalogging = False
   
 while running:
-    print (event.key)
     
     for event in pygame.event.get():
         if event.type == KEYDOWN:
