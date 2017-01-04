@@ -3,9 +3,6 @@
 
 
 #### Libraries #####
-import pygame
-
-from pygame.locals import *
 
 from sense_hat import SenseHat
 from datetime import datetime
@@ -53,22 +50,31 @@ def get_sense_data():
 
 #### Main Program ####
 
-pygame.init()
 sense = SenseHat()
 
 sense.show_message("Started", scroll_speed=0.05, text_colour=[255,255,0], back_colour=[0,0,255])
 
 sense.clear()
 
+import pygame
+
+from pygame.locals import *
+from sense_hat import SenseHat
+
+pygame.init()
+pygame.display.set_mode((640, 480))
+
+sense = SenseHat()
+sense.clear()
+
 running = True
-datalogging = False
 
 x = 0
 y = 0
 sense.set_pixel(x, y, 255, 255, 255)
-  
+
 while running:
-  for event in pygame.event.get():
+    for event in pygame.event.get():
         if event.type == KEYDOWN:
             sense.set_pixel(x, y, 0, 0, 0)  # Black 0,0,0 means OFF
 
@@ -84,8 +90,4 @@ while running:
         sense.set_pixel(x, y, 255, 255, 255)
         if event.type == QUIT:
             running = False
-            print("BYE")    
-    
-                  
-                  
-            
+            print("BYE")
