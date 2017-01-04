@@ -5,7 +5,9 @@
 #### Libraries #####
 from sense_hat import SenseHat
 from datetime import datetime
+import pygame
 
+from pygame.locals import *
 
 #### Functions ####
 
@@ -49,6 +51,7 @@ def get_sense_data():
 
 #### Main Program ####
 
+pygame.init()
 sense = SenseHat()
 
 sense.show_message("Started", scroll_speed=0.05, text_colour=[255,255,0], back_colour=[0,0,255])
@@ -56,3 +59,26 @@ sense.show_message("Started", scroll_speed=0.05, text_colour=[255,255,0], back_c
 while True:
   sense_data = get_sense_data()
   print(sense_data)
+
+running = True
+  
+while running:
+    
+    for event in pygame.event.get():
+        if event.type == KEYDOWN:
+            if event.key == K_RETURN logging = True
+            elif logging = False
+            
+            while logging:
+              sense_data = get_sense_data()
+              print(sense_data)
+            
+            for event in pygame.event.get():
+                if event.type == KEYDOWN:
+                  if event.key == K_RETURN logging = True
+                  pygame.event.clear()
+                  elif logging = False
+                  break
+                  
+                  
+            
