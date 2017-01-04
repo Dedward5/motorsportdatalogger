@@ -89,5 +89,5 @@ while running:
                 datalogging = False
                 pygame.event.clear()
               else: 
-              
+            Break
   
