@@ -65,6 +65,7 @@ pygame.display.set_mode((640, 480))
 # sense.clear()
 
 running = True
+print 'hello'
 
 x = 0
 y = 0
