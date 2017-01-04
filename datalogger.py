@@ -63,26 +63,24 @@ running = True
 datalogging = False
   
 while running:
-    
-    for event in pygame.event.get():
+for event in pygame.event.get():
         if event.type == KEYDOWN:
-            print 'key down'
-            if event.key == K_DOWN: 
-              print 'you pressed down'
-              # pygame.event.clear()
-            else: print 'no key---------'  
-            
-            while datalogging:
-              sense_data = get_sense_data()
-              print(sense_data)
-            
-              for event in pygame.event.get():
-                if event.type == KEYDOWN:
-                  if event.key == K_DOWN: 
-                    datalogging = True
-                    pygame.event.clear()
-                  else: datalogging = Flase
-                  break
+            sense.set_pixel(x, y, 0, 0, 0)  # Black 0,0,0 means OFF
+
+            if event.key == K_DOWN and y < 7:
+                y = y + 1
+            elif event.key == K_UP and y > 0:
+                y = y - 1
+            elif event.key == K_RIGHT and x < 7:
+                x = x + 1
+            elif event.key == K_LEFT and x > 0:
+                x = x - 1
+
+        sense.set_pixel(x, y, 255, 255, 255)
+        if event.type == QUIT:
+            running = False
+            print("BYE")    
+    
                   
                   
             
