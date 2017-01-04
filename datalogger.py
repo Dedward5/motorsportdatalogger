@@ -66,7 +66,7 @@ while running:
     
     for event in pygame.event.get():
         if event.type == KEYDOWN:
-            if event.key == K_RETURN 
+            if event.key == K_RETURN: 
             datalogging = True
             elif logging = False
             
@@ -76,7 +76,7 @@ while running:
             
             for event in pygame.event.get():
                 if event.type == KEYDOWN:
-                  if event.key == K_RETURN 
+                  if event.key == K_RETURN: 
                   datalogging = True
                   pygame.event.clear()
                   elif logging = False
