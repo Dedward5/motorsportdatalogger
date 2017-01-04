@@ -78,16 +78,16 @@ while running:
         pygame.event.clear()
       else:  
             
-    while datalogging:
-      sense.show_message("Logging", scroll_speed=0.05, text_colour=[255,255,0], back_colour=[0,0,255])
-      sense_data = get_sense_data()
-      print(sense_data)
+      while datalogging:
+        sense.show_message("Logging", scroll_speed=0.05, text_colour=[255,255,0], back_colour=[0,0,255])
+        sense_data = get_sense_data()
+        print(sense_data)
             
-      for event in pygame.event.get():
-        if event.type == KEYDOWN:
-          if event.key == K_DOWN: 
-            datalogging = False
-            pygame.event.clear()
-          else: 
+        for event in pygame.event.get():
+          if event.type == KEYDOWN:
+            if event.key == K_DOWN: 
+              datalogging = False
+              pygame.event.clear()
+            else: 
               
   
