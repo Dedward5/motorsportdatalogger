@@ -69,5 +69,23 @@ print 'hello'
 
 
 while running:
-    if event.key == pygame.K_DOWN:
-        print 'key down pressed'
+   for event in pygame.event.get():
+        if event.type == KEYDOWN:
+            print 'key down'
+            if event.key == K_DOWN: 
+              print 'you pressed down'
+              # pygame.event.clear()
+            else: print 'no key---------'  
+            
+            while datalogging:
+              sense_data = get_sense_data()
+              print(sense_data)
+            
+              for event in pygame.event.get():
+                if event.type == KEYDOWN:
+                  if event.key == K_DOWN: 
+                    datalogging = True
+                    pygame.event.clear()
+                  else: datalogging = Flase
+                  break
+  
