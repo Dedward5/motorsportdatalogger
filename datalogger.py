@@ -65,6 +65,7 @@ pygame.display.set_mode((640, 480))
 # sense.clear()
 
 running = True
+datalogging = False
 print 'hello'
 
 
