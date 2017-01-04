@@ -3,11 +3,13 @@
 
 
 #### Libraries #####
-from sense_hat import SenseHat
-from datetime import datetime
 import pygame
 
 from pygame.locals import *
+
+from sense_hat import SenseHat
+from datetime import datetime
+
 
 #### Functions ####
 
@@ -61,14 +63,14 @@ running = True
 datalogging = False
   
 while running:
-    
+  print 'running'
     for event in pygame.event.get():
         if event.type == KEYDOWN:
-            if event.key == K_RETURN: 
-              datalogging = True
-              pygame.event.clear()
-            else: datalogging = Flase
-            print 'Outer Loop'  
+            print 'key down'
+            if event.key == K_DOWN: 
+              print 'you pressed down'
+              # pygame.event.clear()
+            else: print 'no key---------'  
             
             while datalogging:
               sense_data = get_sense_data()
@@ -76,7 +78,7 @@ while running:
             
               for event in pygame.event.get():
                 if event.type == KEYDOWN:
-                  if event.key == K_RETURN: 
+                  if event.key == K_DOWN: 
                     datalogging = True
                     pygame.event.clear()
                   else: datalogging = Flase
