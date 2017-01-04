@@ -63,7 +63,7 @@ running = True
 datalogging = False
   
 while running:
-for event in pygame.event.get():
+  for event in pygame.event.get():
         if event.type == KEYDOWN:
             sense.set_pixel(x, y, 0, 0, 0)  # Black 0,0,0 means OFF
 
