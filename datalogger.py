@@ -68,7 +68,7 @@ while running:
               datalogging = True
               pygame.event.clear()
             else: datalogging = Flase
-              print (Outer Loop)  
+            print (Outer Loop)  
             
             while datalogging:
               sense_data = get_sense_data()
