@@ -69,7 +69,7 @@ while running:
         if event.type == KEYDOWN:
             if event.key == K_RETURN: 
               datalogging = True
-            else Print (False)
+            else: Print (False)
             
             while datalogging:
               sense_data = get_sense_data()
@@ -80,7 +80,7 @@ while running:
                   if event.key == K_RETURN: 
                     datalogging = True
                     pygame.event.clear()
-                  else Print (False)
+                  else: Print (False)
                   break
                   
                   
