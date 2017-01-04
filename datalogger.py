@@ -58,12 +58,11 @@ sense.show_message("Started", scroll_speed=0.05, text_colour=[255,255,0], back_c
 
 sense.clear()
 
-
 pygame.init()
-pygame.display.set_mode((640, 480))
+# pygame.display.set_mode((640, 480))
 
-sense = SenseHat()
-sense.clear()
+# sense = SenseHat()
+# sense.clear()
 
 running = True
 
