@@ -66,6 +66,7 @@ while running:
         if event.type == KEYDOWN:
             if event.key == K_RETURN: 
               datalogging = True
+              pygame.event.clear()
             else: datalogging = Flase
             
             while datalogging:
