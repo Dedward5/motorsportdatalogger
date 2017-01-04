@@ -56,9 +56,6 @@ sense = SenseHat()
 
 sense.show_message("Started", scroll_speed=0.05, text_colour=[255,255,0], back_colour=[0,0,255])
 
-while True:
-  sense_data = get_sense_data()
-  print(sense_data)
 
 running = True
 datalogging = False
@@ -69,7 +66,7 @@ while running:
         if event.type == KEYDOWN:
             if event.key == K_RETURN: 
               datalogging = True
-            else: Print (False)
+            else: datalogging = Flase
             
             while datalogging:
               sense_data = get_sense_data()
@@ -80,7 +77,7 @@ while running:
                   if event.key == K_RETURN: 
                     datalogging = True
                     pygame.event.clear()
-                  else: Print (False)
+                  else: datalogging = Flase
                   break
                   
                   
