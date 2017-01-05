@@ -1,4 +1,4 @@
-#!/usr/bin/python HELLO
+#!/usr/bin/python HELLO world
 
 import sys
 import time
