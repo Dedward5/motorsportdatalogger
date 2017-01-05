@@ -1,4 +1,5 @@
-#!/usr/bin/python
+#!/usr/bin/python HELLO
+
 import sys
 import time
 from sense_hat import SenseHat
