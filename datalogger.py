@@ -4,8 +4,10 @@
 
 #### Libraries #####
 
+
 import pygame
 from pygame.locals import *
+
 from sense_hat import SenseHat
 from datetime import datetime
 
@@ -55,6 +57,7 @@ def get_sense_data():
 sense = SenseHat()
 
 sense.show_message("Started", scroll_speed=0.05, text_colour=[255,255,0], back_colour=[0,0,255])
+
 
 sense.clear()
 
