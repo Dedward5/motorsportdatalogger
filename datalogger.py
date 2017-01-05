@@ -3,6 +3,11 @@
 
 
 #### Libraries #####
+
+
+import pygame
+from pygame.locals import *
+
 from sense_hat import SenseHat
 from datetime import datetime
 
@@ -53,6 +58,35 @@ sense = SenseHat()
 
 sense.show_message("Started", scroll_speed=0.05, text_colour=[255,255,0], back_colour=[0,0,255])
 
-while True:
-  sense_data = get_sense_data()
-  print(sense_data)
+
+sense.clear()
+
+pygame.init()
+pygame.display.set_mode((640, 480))
+
+# sense = SenseHat()
+# sense.clear()
+
+running = True
+datalogging = False
+print 'hello'
+
+
+while running:
+   for event in pygame.event.get():
+        if event.type == KEYDOWN:
+            if event.key == K_RETURN: 
+              datalogging = True
+            else: datalogging = False
+            
+            while datalogging:
+              sense_data = get_sense_data()
+              print(sense_data)
+            
+              for event in pygame.event.get():
+                if event.type == KEYDOWN:
+                  if event.key == K_RETURN: 
+                    datalogging = False
+                    pygame.event.clear()
+                  else: datalogging = True
+                  break
