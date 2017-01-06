@@ -4,17 +4,16 @@
 
 #### Libraries #####
 
+import sys # revisit to see if needed
+import time # revisit to see if needed
 
-import pygame
-from pygame.locals import *
-
-from sense_hat import SenseHat
-from datetime import datetime
-
+from sense_hat import SenseHat # for core sensehat functions
+from datetime import datetime # for date and time functions
+from evdev import InputDevice, list_devices, ecodes # needed for joystick 
 
 #### Functions ####
 
-def get_sense_data():
+def get_sense_data(): # Main function to get all the sense data
   sense_data=[]
 
   sense_data.append(sense.get_temperature_from_humidity())
@@ -54,39 +53,36 @@ def get_sense_data():
 
 #### Main Program ####
 
+print("Press Ctrl-C to quit")
+time.sleep(1)
+
 sense = SenseHat()
 
-sense.show_message("Started", scroll_speed=0.05, text_colour=[255,255,0], back_colour=[0,0,255])
+sense.clear()  # Blank the LED matrix
+sense.show_message("Started", scroll_speed=0.05, text_colour=[255,255,0], back_colour=[0,0,255]) # Show some text on matrix
 
+# Check to see if the sense hat joystick is there and set it up as an input device
 
-sense.clear()
+found = False;
+devices = [InputDevice(fn) for fn in list_devices()]
+for dev in devices:
+    if dev.name == 'Raspberry Pi Sense HAT Joystick':
+        found = True;
+        break
 
-pygame.init()
-pygame.display.set_mode((640, 480))
+if not(found):
+    print('Raspberry Pi Sense HAT Joystick not found. Aborting ...')
+    sys.exit()
 
-# sense = SenseHat()
-# sense.clear()
-
-running = True
-datalogging = False
-print 'hello'
-
-
-while running:
-   for event in pygame.event.get():
-        if event.type == KEYDOWN:
-            if event.key == K_RETURN: 
-              datalogging = True
-            else: datalogging = False
-            
-            while datalogging:
-              sense_data = get_sense_data()
-              print(sense_data)
-            
-              for event in pygame.event.get():
-                if event.type == KEYDOWN:
-                  if event.key == K_RETURN: 
-                    datalogging = False
-                    pygame.event.clear()
-                  else: datalogging = True
-                  break
+# Loop around looking for keyboard and things      
+    
+try:
+    for event in dev.read_loop():
+        if event.type == ecodes.EV_KEY:
+            if event.value == 1:  # key down
+                print ("keydown")
+            if event.value == 0:  # key up
+                print ("key upppppppppppp")
+except KeyboardInterrupt:
+    sys.exit()
+    
