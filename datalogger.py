@@ -88,8 +88,8 @@ logging = False
 alternator = alternate()  
   
 while True:
-  print (alternator)
-  
+  value = (1, 0)[value]
+  Print (value)
 
     
     
