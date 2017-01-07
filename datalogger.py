@@ -50,7 +50,7 @@ def get_sense_data(): # Main function to get all the sense data
   return sense_data
   
 Def run_log (): # funtion to pick up joystick input
-  Value = 0
+  value = 0
   value = (1, 0)[value]  
   try:
     for event in dev.read_loop():
@@ -60,7 +60,7 @@ Def run_log (): # funtion to pick up joystick input
             print("Logging stopped")
       except KeyboardInterrupt:
           sys.exit()
-
+  return value 
   
   
 #### Main Program ####
@@ -94,9 +94,8 @@ value = 0
   
 while True:
 
-
-
-  print (value)
+  print (run_log)
+  
 
     
     
