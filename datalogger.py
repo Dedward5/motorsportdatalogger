@@ -90,14 +90,6 @@ alternator = alternate()
 while True:
   print (alternator)
   
-try:
-    for event in dev.read_loop():
-        if event.type == ecodes.EV_KEY:
-          if event.code == ecodes.KEY_ENTER and event.value == 1:
-              
-              
-except KeyboardInterrupt:
-    sys.exit()
-    
+
     
     
