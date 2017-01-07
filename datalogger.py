@@ -79,14 +79,11 @@ if not(found):
 try:
     for event in dev.read_loop():
         if event.type == ecodes.EV_KEY:
-          if event.code == ecodes.KEY_ENTER:
+          if event.code == ecodes.KEY_ENTER and event.value == 1:
                print("Boom you pressed ENTER")
-          #if event.value == 1:  # key down
-            #  print ("keydown")
-             # sense_data = get_sense_data ()
-             # print (sense_data)
-          #if event.value == 0:  # key up
-             # print ("key upppppppppppp")
+               
+          
+          
 except KeyboardInterrupt:
     sys.exit()
     
