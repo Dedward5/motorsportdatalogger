@@ -87,7 +87,7 @@ logging = False
     
 alternator = alternate()  
   
-While True:
+while True:
   print (alternator)
   
 try:
