@@ -49,7 +49,7 @@ def get_sense_data(): # Main function to get all the sense data
 
   return sense_data
   
-Def run_log(): # funtion to pick up joystick input
+def run_log(): # funtion to pick up joystick input
   value = 0
   value = (1, 0)[value]  
   try:
