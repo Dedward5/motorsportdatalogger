@@ -52,6 +52,10 @@ def get_sense_data(): # Main function to get all the sense data
 
   return sense_data
   
+def alternate():
+   while True:
+      yield 0
+      yield 1
   
 
 #### Main Program ####
@@ -77,14 +81,18 @@ if not(found):
     print('Raspberry Pi Sense HAT Joystick not found. Aborting ...')
     sys.exit()
 
+    
+    
 # Loop around looking for keyboard and things      
     
+alternator = alternate()  
+  
 try:
     for event in dev.read_loop():
         if event.type == ecodes.EV_KEY:
           if event.code == ecodes.KEY_ENTER and event.value == 1:
-              next(myIterator)
-              print (myIterator)
+              next(alternator)
+              print (alternator)
               
 except KeyboardInterrupt:
     sys.exit()
