@@ -91,7 +91,8 @@ try:
                   if event.type == ecodes.EV_KEY:
                         if event.code == ecodes.KEY_ENTER and event.value == 1:
                             print("Loggin stopped")
-          
+              except KeyboardInterrupt:
+                  sys.exit()
+                
 except KeyboardInterrupt:
     sys.exit()
-    
