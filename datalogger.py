@@ -56,6 +56,7 @@ def run_log(): # funtion to pick up joystick input
          if event.type == ecodes.EV_KEY:
           if event.code == ecodes.KEY_ENTER and event.value == 1:
             value = (1, 0)[value]  
+            print (value)
   except KeyboardInterrupt:
           sys.exit()
   return value 
