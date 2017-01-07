@@ -92,7 +92,8 @@ logging = False
 value = 0
   
 while True:
-
+  
+  log_status = run_log()  
   print (run_log)
   
 
