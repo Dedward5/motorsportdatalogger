@@ -51,13 +51,12 @@ def get_sense_data(): # Main function to get all the sense data
   
 def run_log(): # funtion to pick up joystick input
   value = 0
-  value = (1, 0)[value]  
   try:
     for event in dev.read_loop():
       sense.show_message("Logging", scroll_speed=0.05, text_colour=[255,255,0], back_colour=[0,0,255]) # Show some text on matrix
       if event.type == ecodes.EV_KEY:
           if event.code == ecodes.KEY_ENTER and event.value == 1:
-            print("Logging stopped")
+            value = (1, 0)[value]  
   except KeyboardInterrupt:
           sys.exit()
   return value 
