@@ -88,6 +88,7 @@ logging = False
 # Loop around looking for keyboard and things      
     
 value = 0
+global value
   
 while True:
   
