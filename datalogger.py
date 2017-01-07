@@ -79,15 +79,14 @@ if not(found):
 
 # Loop around looking for keyboard and things      
     
-
-  try:
+try:
     for event in dev.read_loop():
         if event.type == ecodes.EV_KEY:
           if event.code == ecodes.KEY_ENTER and event.value == 1:
               myIterator.next()
               print (myIterator)
               
-  except KeyboardInterrupt:
+except KeyboardInterrupt:
     sys.exit()
     
     
