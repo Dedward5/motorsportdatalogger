@@ -89,7 +89,7 @@ try:
                 for event in dev.read_loop():
                   sense.show_message("Logging", scroll_speed=0.05, text_colour=[255,255,0], back_colour=[0,0,255]) # Show some text on matrix
                   
-              except if event.type == ecodes.EV_KEY and event.code == ecodes.KEY_ENTER and event.value == 1:
+              except event.type == ecodes.EV_KEY and event.code == ecodes.KEY_ENTER and event.value == 1:
                             print("Logging stopped")
                 
 except KeyboardInterrupt:
