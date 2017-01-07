@@ -81,13 +81,11 @@ try:
         if event.type == ecodes.EV_KEY:
           if event.code == ecodes.KEY_ENTER and event.value == 1:
                print("Logging Started")
-               
-                for event in dev.read_loop():
+               for event in dev.read_loop():
                   sense.show_message("Logging", scroll_speed=0.05, text_colour=[255,255,0], back_colour=[0,0,255]) # Show some text on matrix
-                      
-                    if event.type == ecodes.EV_KEY:
-                          if event.code == ecodes.KEY_ENTER and event.value == 1:
-                          print("Loggin stopped")
+                  if event.type == ecodes.EV_KEY:
+                        if event.code == ecodes.KEY_ENTER and event.value == 1:
+                        print("Loggin stopped")
           
 except KeyboardInterrupt:
     sys.exit()
