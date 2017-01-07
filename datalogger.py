@@ -91,7 +91,7 @@ value = 0
   
 while True:
   value = (1, 0)[value]
-  Print (value)
+  print (value)
 
     
     
