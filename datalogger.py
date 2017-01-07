@@ -79,6 +79,7 @@ if not(found):
 try:
     for event in dev.read_loop():
         if event.type == ecodes.EV_KEY:
+          print (event.value)
             if event.value == 1:  # key down
                 print ("keydown")
                 sense_data = get_sense_data ()
