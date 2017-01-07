@@ -92,10 +92,10 @@ try:
         if event.type == ecodes.EV_KEY:
           if event.code == ecodes.KEY_ENTER and event.value == 1:
               Print (logging)
-              if logging == Flase
+              if not logging
                  logging = True
               else
-                 logging = True
+                  not logging
               
 except KeyboardInterrupt:
     sys.exit()
