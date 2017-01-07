@@ -90,7 +90,7 @@ try:
                       print("Logging Started")
               
               except KeyboardInterrupt:
-                event.code == ecodes.KEY_ENTER and event.value == 1:    
+                event.code == ecodes.KEY_ENTER and event.value == 1    
 
 except KeyboardInterrupt:
     sys.exit()
