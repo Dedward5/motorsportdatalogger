@@ -50,6 +50,7 @@ def get_sense_data(): # Main function to get all the sense data
   return sense_data
   
 def run_log(): # funtion to pick up joystick input
+  value = 0
   try:
     for event in dev.read_loop():
          if event.type == ecodes.EV_KEY:
@@ -87,9 +88,8 @@ logging = False
     
 # Loop around looking for keyboard and things      
     
-value = 0
-global value
-  
+
+
 while True:
   
   log_status = run_log()  
