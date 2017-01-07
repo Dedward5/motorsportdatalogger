@@ -80,7 +80,7 @@ try:
     for event in dev.read_loop():
         # if event.type == ecodes.EV_KEY:
         if event.type == ecodes.KEY_ENTER:  
-          print (event.value)
+          print "pressed enter"
           if event.value == 1:  # key down
               print ("keydown")
               sense_data = get_sense_data ()
