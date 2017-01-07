@@ -86,11 +86,14 @@ try:
               print("Logging Started")
               
               try:
-                for event in dev.read_loop():
-                  sense.show_message("Logging", scroll_speed=0.05, text_colour=[255,255,0], back_colour=[0,0,255]) # Show some text on matrix
-                  
-              except event.code == ecodes.KEY_ENTER:
-                            print("Logging stopped")
-                
+                  for event in dev.read_loop():
+                      if event.type == ecodes.EV_KEY:
+                        if event.code == ecodes.KEY_ENTER and event.value == 1:
+                            logging = Flase 
+                            print("Logging Stopped")
+              
+              except KeyboardInterrupt:
+                  event.code == ecodes.KEY_ENTER and event.value == 1:
+
 except KeyboardInterrupt:
     sys.exit()
