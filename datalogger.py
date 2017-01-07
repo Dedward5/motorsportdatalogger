@@ -81,7 +81,7 @@ if not(found):
     print('Raspberry Pi Sense HAT Joystick not found. Aborting ...')
     sys.exit()
 
-    
+logging = False    
     
 # Loop around looking for keyboard and things      
     
@@ -91,8 +91,11 @@ try:
     for event in dev.read_loop():
         if event.type == ecodes.EV_KEY:
           if event.code == ecodes.KEY_ENTER and event.value == 1:
-              next(alternator)
-              print (alternator)
+              Print (logging)
+              if logging == Flase
+                 logging = True
+              else
+                 logging = True
               
 except KeyboardInterrupt:
     sys.exit()
