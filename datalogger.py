@@ -81,12 +81,12 @@ try:
         if event.type == ecodes.EV_KEY:
           if event.code == ecodes.KEY_UP:
                print("up")
-          if event.value == 1:  # key down
-              print ("keydown")
-              sense_data = get_sense_data ()
-              print (sense_data)
-          if event.value == 0:  # key up
-              print ("key upppppppppppp")
+          #if event.value == 1:  # key down
+            #  print ("keydown")
+             # sense_data = get_sense_data ()
+             # print (sense_data)
+          #if event.value == 0:  # key up
+             # print ("key upppppppppppp")
 except KeyboardInterrupt:
     sys.exit()
     
