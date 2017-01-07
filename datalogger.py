@@ -79,8 +79,8 @@ if not(found):
 try:
     for event in dev.read_loop():
         if event.type == ecodes.EV_KEY:
-          if event.code == ecodes.KEY_UP:
-               print("up")
+          if event.code == ecodes.KEY_ENTER:
+               print("Boom you pressed ENTER")
           #if event.value == 1:  # key down
             #  print ("keydown")
              # sense_data = get_sense_data ()
