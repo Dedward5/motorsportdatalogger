@@ -11,6 +11,9 @@ from sense_hat import SenseHat # for core sensehat functions
 from datetime import datetime # for date and time functions
 from evdev import InputDevice, list_devices, ecodes # needed for joystick 
 
+from itertools import cycle
+myIterator = cycle(range(2))
+
 #### Functions ####
 
 def get_sense_data(): # Main function to get all the sense data
@@ -76,21 +79,16 @@ if not(found):
 
 # Loop around looking for keyboard and things      
     
-loggin = False
 
-try:
+  try:
     for event in dev.read_loop():
         if event.type == ecodes.EV_KEY:
           if event.code == ecodes.KEY_ENTER and event.value == 1:
-              print("Logging Started")
+              myIterator.next()
+              print (myIterator)
               
-              
-              try:
-                  for event in dev.read_loop():
-                      sense.show_message("Logging", scroll_speed=0.05, text_colour=[255,255,0], back_colour=[0,0,255]) # Show some text on matrix
-              
-              except KeyboardInterrupt:
-                event.code == ecodes.KEY_ENTER and event.value == 1    
-
-except KeyboardInterrupt:
+  except KeyboardInterrupt:
     sys.exit()
+    
+    
+    
