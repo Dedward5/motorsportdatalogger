@@ -86,6 +86,8 @@ logging = False
 # Loop around looking for keyboard and things      
     
 alternator = alternate()  
+
+value = 0
   
 while True:
   value = (1, 0)[value]
