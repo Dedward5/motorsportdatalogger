@@ -87,15 +87,14 @@ logging = False
     
 alternator = alternate()  
   
+While True:
+  print (alternator)
+  
 try:
     for event in dev.read_loop():
         if event.type == ecodes.EV_KEY:
           if event.code == ecodes.KEY_ENTER and event.value == 1:
-              Print (logging)
-              if not logging
-                 logging = True
-              else
-                  not logging
+              
               
 except KeyboardInterrupt:
     sys.exit()
