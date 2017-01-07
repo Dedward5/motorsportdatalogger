@@ -76,25 +76,21 @@ if not(found):
 
 # Loop around looking for keyboard and things      
     
-logging = False  
-  
+loggin = False
+
 try:
     for event in dev.read_loop():
         if event.type == ecodes.EV_KEY:
           if event.code == ecodes.KEY_ENTER and event.value == 1:
-              logging = True 
               print("Logging Started")
+              
               
               try:
                   for event in dev.read_loop():
-                      sense.show_message("Logging", scroll_speed=0.05, text_colour=[255,255,0], back_colour=[0,0,255]) # Show some text on matrix
-                      if event.type == ecodes.EV_KEY:
-                        if event.code == ecodes.KEY_ENTER and event.value == 1:
-                            logging = Flase 
-                            print("Logging Stopped")
+                      print("Logging Started")
               
               except KeyboardInterrupt:
-                  ecodes.KEY_ENTER
+                event.code == ecodes.KEY_ENTER and event.value == 1:    
 
 except KeyboardInterrupt:
     sys.exit()
