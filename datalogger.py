@@ -95,5 +95,5 @@ logging = False
 sense.show_message("Here", scroll_speed=0.05, text_colour=[255,255,0], back_colour=[0,0,255]) # Show some text on matrix
 
 
-    
+logging = run_log()    
     
