@@ -91,11 +91,8 @@ logging = False
     
 
 
-while True:
-  
-  log_status = run_log()  
-  print (run_log)
-  print ("running along")
+sense.show_message("Here", scroll_speed=0.05, text_colour=[255,255,0], back_colour=[0,0,255]) # Show some text on matrix
+
 
     
     
