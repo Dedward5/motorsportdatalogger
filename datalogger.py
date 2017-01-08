@@ -56,7 +56,7 @@ def run_log(): # funtion to pick up joystick input
          if event.type == ecodes.EV_KEY:
           if event.code == ecodes.KEY_ENTER and event.value == 1:
             value = (1, 0)[value]  
-            while value
+            while value:
               print ("wibble")
   except KeyboardInterrupt:
           sys.exit()
