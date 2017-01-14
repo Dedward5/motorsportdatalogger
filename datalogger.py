@@ -48,7 +48,7 @@ def get_sense_data(): # Main function to get all the sense data
 
   return sense_data
 
-def move_up(event):
+def joystick_push(event):
     global value
     if event.action=='pressed':
       value = (1, 0)[value]  
@@ -70,7 +70,7 @@ sense.show_message("Started", scroll_speed=0.05, text_colour=[255,255,0], back_c
     
 value = 0
 
-sense.stick.direction_up = move_up
+sense.stick.direction_push = joystick_push
 
 while True:
   print("Waiting.....")
