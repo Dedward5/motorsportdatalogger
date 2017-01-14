@@ -72,12 +72,12 @@ value = 0
 
 sense.stick.direction_up = move_up
 
-try:
+running=true
+
+while running:
   print("Waiting.....")
   while value:
     print("logging")
-      
-except KeyboardInterrupt:
-    sys.exit()
+     
 
 
