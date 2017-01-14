@@ -70,7 +70,7 @@ sense.show_message("Started", scroll_speed=0.05, text_colour=[255,255,0], back_c
     
 value = 0
 
-sense.stick.direction_up = joystick_push
+sense.stick.direction_any = joystick_push
 
 while True:
   print("Waiting.....")
