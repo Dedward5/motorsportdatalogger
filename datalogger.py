@@ -72,9 +72,7 @@ value = 0
 
 sense.stick.direction_up = move_up
 
-running=true
-
-while running:
+while true:
   print("Waiting.....")
   while value:
     print("logging")
