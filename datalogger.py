@@ -65,21 +65,7 @@ sense = SenseHat()
 
 sense.clear()  # Blank the LED matrix
 sense.show_message("Started", scroll_speed=0.05, text_colour=[255,255,0], back_colour=[0,0,255]) # Show some text on matrix
-
-# Check to see if the sense hat joystick is there and set it up as an input device
-
-found = False;
-devices = [InputDevice(fn) for fn in list_devices()]
-for dev in devices:
-    if dev.name == 'Raspberry Pi Sense HAT Joystick':
-        found = True;
-        break
-
-if not(found):
-    print('Raspberry Pi Sense HAT Joystick not found. Aborting ...')
-    sys.exit()
-  
-    
+      
 # Loop around looking for keyboard and things      
     
 value = 0
