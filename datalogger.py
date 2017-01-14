@@ -88,7 +88,7 @@ sense.stick.direction_up = move_up
 
 try:
   print("Waiting.....")
-  while value
+  while value:
     print("logging')
       
 except KeyboardInterrupt:
