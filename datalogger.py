@@ -9,7 +9,6 @@ import time # revisit to see if needed
 
 from sense_hat import SenseHat # for core sensehat functions
 from datetime import datetime # for date and time functions
-from evdev import InputDevice, list_devices, ecodes # needed for joystick 
 
 #### Functions ####
 
@@ -48,24 +47,18 @@ def get_sense_data(): # Main function to get all the sense data
   sense_data.append(datetime.now())
 
   return sense_data
-  
-def run_log(): # funtion to pick up joystick input
-  value = 0
-  try:
-    for event in dev.read_loop():
-         if event.type == ecodes.EV_KEY:
-          if event.code == ecodes.KEY_ENTER and event.value == 1:
-            value = (1, 0)[value]  
-            while value:
-              print ("wibble")
-  except KeyboardInterrupt:
-          sys.exit()
-  return value 
-  
-  
+
+def move_up(event):
+    global value
+    if event.action=='pressed':
+      value = (1, 0)[value]  
+    print(event)
+    print(value)
+    
 #### Main Program ####
 
 print("Press Ctrl-C to quit")
+
 time.sleep(1)
 
 sense = SenseHat()
@@ -85,15 +78,20 @@ for dev in devices:
 if not(found):
     print('Raspberry Pi Sense HAT Joystick not found. Aborting ...')
     sys.exit()
-
-logging = False    
+  
     
 # Loop around looking for keyboard and things      
     
+value = 0
+
+sense.stick.direction_up = move_up
+
+try:
+  print("Waiting.....")
+  while value
+    print("logging')
+      
+except KeyboardInterrupt:
+    sys.exit()
 
 
-sense.show_message("Here", scroll_speed=0.05, text_colour=[255,255,0], back_colour=[0,0,255]) # Show some text on matrix
-
-
-logging = run_log()    
-    
