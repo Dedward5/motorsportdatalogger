@@ -8,7 +8,7 @@ import sys # revisit to see if needed
 import time # revisit to see if needed
 
 from sense_hat import SenseHat # for core sensehat functions
-from datetime import datetime # for date and time functions
+from datetime import datetime # for date and time function
 
 #### Functions ####
 
@@ -59,6 +59,7 @@ def joystick_push(event):
 
 print("Press Ctrl-C to quit")
 
+
 time.sleep(1)
 
 sense = SenseHat()
@@ -76,6 +77,3 @@ while True:
   print("Waiting.....")
   while value:
     print("logging")
-     
-
-
