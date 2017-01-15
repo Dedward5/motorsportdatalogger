@@ -1,6 +1,10 @@
 # Raceing car data logger for SenseHat equipped Raspberry Pi
 # By David Edwards
 
+#### Loggin Settings #######
+
+FILENAME = ""
+WRITE_FREQUENCY = 50
 
 #### Libraries #####
 
@@ -11,6 +15,21 @@ from sense_hat import SenseHat # for core sensehat functions
 from datetime import datetime # for date and time function
 
 #### Functions ####
+
+def log_data ():
+  output_string = ",".join(str(value) for value in sense_data)
+  batch_data.append(output_string)
+
+def file_setup(filename)
+  header  =["temp_h","temp_p","humidity","pressure",
+  "pitch","roll","yaw",
+  "mag_x","mag_y","mag_z",
+  "accel_x","accel_y","accel_z",
+  "gyro_x","gyro_y","gyro_z",
+  "timestamp"]
+
+  with open(filename,"w") as f:
+      f.write(",".join(str(value) for value in header)+ "\n")
 
 def get_sense_data(): # Main function to get all the sense data
   sense_data=[]
@@ -48,7 +67,7 @@ def get_sense_data(): # Main function to get all the sense data
 
   return sense_data
 
-def joystick_push(event):
+def joystick_push(event):# if stick is pressed toggle logging state by switching "value"
     global value
     if event.action=='pressed':
       value = (1, 0)[value]  
@@ -63,6 +82,7 @@ print("Press Ctrl-C to quit")
 time.sleep(1)
 
 sense = SenseHat()
+batch_data= []
 
 sense.clear()  # Blank the LED matrix
 sense.show_message("Started", scroll_speed=0.05, text_colour=[255,255,0], back_colour=[0,0,255]) # Show some text on matrix
@@ -76,7 +96,15 @@ sense.stick.direction_middle = joystick_push
 while True:
   print("Waiting.....")
   while value:
+    filename = "..\race_data"+str(datetime.now())+".csv"
     print ("logging")
     sense_data = get_sense_data()
-    print (sense_data)
+    log_data()
+
+    if len(batch_data) >= WRITE_FREQUENCY:
+      print("Writing to file..")
+      with open(filename,"a") as f:
+          for line in batch_data:
+              f.write(line + "\n")
+          batch_data = []
 
