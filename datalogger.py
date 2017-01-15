@@ -69,6 +69,7 @@ def get_sense_data(): # Main function to get all the sense data
 
 def joystick_push(event):# if stick is pressed toggle logging state by switching "value"
     global value
+    global filename
     if event.action=='pressed':
       value = (1, 0)[value]  
     print(event)
