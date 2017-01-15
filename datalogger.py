@@ -20,7 +20,7 @@ def log_data ():
   output_string = ",".join(str(value) for value in sense_data)
   batch_data.append(output_string)
 
-def file_setup(filename)
+def file_setup(filename):
   header  =["temp_h","temp_p","humidity","pressure",
   "pitch","roll","yaw",
   "mag_x","mag_y","mag_z",
