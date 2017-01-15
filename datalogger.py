@@ -73,6 +73,8 @@ def joystick_push(event):# if stick is pressed toggle logging state by switching
       value = (1, 0)[value]  
     print(event)
     print(value)
+    filename = "race_data"+str(datetime.now())+".csv"
+    file_setup(filename)    
     
 #### Main Program ####
 
@@ -95,9 +97,10 @@ sense.stick.direction_middle = joystick_push
 
 while True:
   print("Waiting.....")
+  
+  
   while value:
-    filename = "..\race_data"+str(datetime.now())+".csv"
-    file_setup(filename)    
+    
     print ("logging")
     sense_data = get_sense_data()
     log_data()
