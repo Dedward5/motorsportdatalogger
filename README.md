@@ -20,13 +20,9 @@ Racing car (Optional, but cool)
 
 # Dependencies
 Make sure you have Python installed
-
 sudo apt-get install python3-pip
 
 Make sure you have the Sense Hat library
 sudo apt-get install sense-hat
 
-Before running the code you need to
-sudo pip-3.2 install pillow
-sudo pip-3.2 install evdev
 

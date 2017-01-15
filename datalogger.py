@@ -76,4 +76,7 @@ sense.stick.direction_middle = joystick_push
 while True:
   print("Waiting.....")
   while value:
-    print("logging")
+    print ("logging")
+    sense_data = get_sense_data()
+    print (sense_data)
+
