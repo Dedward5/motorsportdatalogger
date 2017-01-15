@@ -97,6 +97,7 @@ while True:
   print("Waiting.....")
   while value:
     filename = "..\race_data"+str(datetime.now())+".csv"
+    file_setup(filename)    
     print ("logging")
     sense_data = get_sense_data()
     log_data()
