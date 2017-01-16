@@ -67,28 +67,27 @@ def get_sense_data(): # Main function to get all the sense data
 
   return sense_data
 
-def joystick_push(event):# if stick is pressed toggle logging state by switching "value"
+def joystick_push(event):# if stick is pressed toggle logging state by switching "value" 
     global value
     global filename
     if event.action=='pressed':
       value = (1, 0)[value]  
     print(event)
     print(value)
-    filename = "race_data"+str(datetime.now())+".csv"
-    file_setup(filename)    
+    if value == 1 # only create and setup the file if we are going to do logging
+      filename = "race_data"+str(datetime.now())+".csv"
+      file_setup(filename)    
     
 #### Main Program ####
 
 print("Press Ctrl-C to quit")
 
-
 time.sleep(1)
-
 sense = SenseHat()
 batch_data= []
 
 sense.clear()  # Blank the LED matrix
-sense.show_message("Started", scroll_speed=0.05, text_colour=[255,255,0], back_colour=[0,0,255]) # Show some text on matrix
+sense.show_message("Started", scroll_speed=0.05, text_colour=[255,255,255], back_colour=[0,0,0]) # Show some text on matrix
       
 # Loop around looking for keyboard and things      
     
@@ -99,8 +98,7 @@ sense.stick.direction_middle = joystick_push
 while True:
   print("Waiting.....")
   
-  
-  while value:
+  while value: # When we are logging
     
     print ("logging")
     sense_data = get_sense_data()
