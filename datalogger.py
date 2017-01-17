@@ -87,8 +87,8 @@ sense = SenseHat()
 batch_data= []
 
 sense.clear()  # Blank the LED matrix
-sense.show_message("Started", scroll_speed=0.05, text_colour=[255,255,255], back_colour=[0,0,0]) # Show some text on matrix
-      
+# sense.show_message("Started", scroll_speed=0.05, text_colour=[255,255,255], back_colour=[0,0,0]) # Show some text on matrix
+sense.show_letter("R",text_colour=[0, 0, 0], back_colour=[255,0,0])      
 # Loop around looking for keyboard and things      
     
 value = 0
@@ -101,6 +101,7 @@ while True:
   while value: # When we are logging
     
     print ("logging")
+    sense.show_letter("L",text_colour=[0, 0, 0], back_colour=[0,255,0])     
     sense_data = get_sense_data()
     log_data()
 
