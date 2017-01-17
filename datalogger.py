@@ -75,7 +75,7 @@ def joystick_push(event):# if stick is pressed toggle logging state by switching
     print(event)
     print(value)
     if value == 1: # only create and setup the file if we are going to do logging
-      filename = "../race_data"+str(datetime.now())+".csv"
+      filename = "../race_data_"+str(datetime.now())+".csv"
       file_setup(filename)    
     
 #### Main Program ####
@@ -88,7 +88,7 @@ batch_data= []
 
 sense.clear()  # Blank the LED matrix
 # sense.show_message("Started", scroll_speed=0.05, text_colour=[255,255,255], back_colour=[0,0,0]) # Show some text on matrix
-sense.show_letter("R",text_colour=[0, 0, 0], back_colour=[255,0,0])      
+    
 # Loop around looking for keyboard and things      
     
 value = 0
@@ -97,6 +97,7 @@ sense.stick.direction_middle = joystick_push
 
 while True:
   print("Waiting.....")
+  sense.show_letter("R",text_colour=[0, 0, 0], back_colour=[255,0,0]) 
   
   while value: # When we are logging
     
