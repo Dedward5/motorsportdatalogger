@@ -9,6 +9,7 @@ WRITE_FREQUENCY = 50
 #### Libraries #####
 
 import sys # revisit to see if needed
+import os #used for the shutdown
 import time # revisit to see if needed
 
 from sense_hat import SenseHat # for core sensehat functions
@@ -130,5 +131,5 @@ while running:
 #Once the above while loop ends its time to shutdown
 print ("Shutting down the Pi") # Displays this on the main screen
 
-killall python
+os.system('shutdown now -h')
 
