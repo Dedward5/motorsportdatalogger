@@ -126,4 +126,8 @@ while running:
               f.write(line + "\n")
           batch_data = []
 
-print ("Not running....bye")
+#Once the above while loop ends its time to shutdown
+print ("Shutting down the Pi") # Displays this on the main screen
+sense.show_message("Shutting down the Pi", scroll_speed=0.05, text_colour=[255,255,255], back_colour=[0,0,0]) # Displays this on the matrix
+  
+os.system('shutdown now -h') # call the shutdown
