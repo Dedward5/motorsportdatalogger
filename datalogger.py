@@ -130,4 +130,4 @@ while running:
 #Once the above while loop ends its time to shutdown
 print ("Shutting down the Pi") # Displays this on the main screen
 
-sys.exit(0)
+sys.exit()
