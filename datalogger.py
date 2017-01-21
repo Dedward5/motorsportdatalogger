@@ -71,6 +71,8 @@ def joystick_push(event):# if stick is pressed toggle logging state by switching
     global value
     global running
     global filename
+    start = time.time()
+    
     if event.action=='pressed':
       value = (1, 0)[value]  
     print(event)
@@ -78,14 +80,13 @@ def joystick_push(event):# if stick is pressed toggle logging state by switching
     if value == 1: # only create and setup the file if we are going to do logging
       filename = "../race_data_"+str(datetime.now())+".csv"
       file_setup(filename)    
-    if event.action=='held':
-      print("Button is Held")  
-      start = time.time()
-      while time.time() < start + 5:
-        print("Still Held")  
-        if event.action=='released':
-          running = 1
-        running = 0
+    
+    while event.action=='held':
+      print("Button is Held")
+      if time.time() > start + 5
+          print ("shutdown")
+          running = 0       
+        
         
       
 #### Main Program ####
@@ -107,13 +108,13 @@ running = 1
 sense.stick.direction_middle = joystick_push
 
 while running:
-  print("Waiting.....")
+  print("Running.....")
 
   sense.show_letter("R",text_colour=[0, 0, 0], back_colour=[255,0,0]) 
   
   while value: # When we are logging
     
-    print ("logging")
+    print ("Logging")
     sense.show_letter("L",text_colour=[0, 0, 0], back_colour=[0,255,0])     
     sense_data = get_sense_data()
     log_data()
