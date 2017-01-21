@@ -97,6 +97,7 @@ sense.stick.direction_middle = joystick_push
 
 while True:
   print("Waiting.....")
+
   sense.show_letter("R",text_colour=[0, 0, 0], back_colour=[255,0,0]) 
   
   while value: # When we are logging
