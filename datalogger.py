@@ -83,7 +83,7 @@ def joystick_push(event):# if stick is pressed toggle logging state by switching
     
     while event.action=='held':
       print("Button is Held")
-      if time.time() > start + 5
+      if time.time() > start + 5:
           print ("shutdown")
           running = 0       
         
