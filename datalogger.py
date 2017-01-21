@@ -69,6 +69,7 @@ def get_sense_data(): # Main function to get all the sense data
 
 def joystick_push(event):# if stick is pressed toggle logging state by switching "value" 
     global value
+    global running
     global filename
     if event.action=='pressed':
       value = (1, 0)[value]  
@@ -77,7 +78,16 @@ def joystick_push(event):# if stick is pressed toggle logging state by switching
     if value == 1: # only create and setup the file if we are going to do logging
       filename = "../race_data_"+str(datetime.now())+".csv"
       file_setup(filename)    
-    
+    if event.action=='held':
+      print("Button is Held")  
+      start = time.time()
+      while time.time() < start + 5:
+        print("Still Held")  
+        if event.action=='released':
+          running = 1
+        running = 0
+        
+      
 #### Main Program ####
 
 print("Press Ctrl-C to quit")
@@ -92,10 +102,11 @@ sense.clear()  # Blank the LED matrix
 # Loop around looking for keyboard and things      
     
 value = 0
+running = 1
 
 sense.stick.direction_middle = joystick_push
 
-while True:
+while running:
   print("Waiting.....")
 
   sense.show_letter("R",text_colour=[0, 0, 0], back_colour=[255,0,0]) 
@@ -114,3 +125,4 @@ while True:
               f.write(line + "\n")
           batch_data = []
 
+print ("Not running....bye")
