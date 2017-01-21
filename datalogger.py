@@ -73,7 +73,7 @@ def joystick_push(event):# if stick is pressed toggle logging state by switching
     global filename
     start = time.time()
     
-    if event.action=='pressed':
+    if event.action=='released':
       value = (1, 0)[value]  
     print(event)
     print(value)
@@ -85,6 +85,7 @@ def joystick_push(event):# if stick is pressed toggle logging state by switching
       print("Button is Held")
       if time.time() > start + 5:
           print ("shutdown")
+          value = 0
           running = 0       
         
         
