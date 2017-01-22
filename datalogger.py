@@ -9,6 +9,7 @@ WRITE_FREQUENCY = 50
 #### Libraries #####
 
 import sys # revisit to see if needed
+import os #used for the shutdown
 import time # revisit to see if needed
 
 from sense_hat import SenseHat # for core sensehat functions
@@ -69,8 +70,11 @@ def get_sense_data(): # Main function to get all the sense data
 
 def joystick_push(event):# if stick is pressed toggle logging state by switching "value" 
     global value
+    global running
     global filename
-    if event.action=='pressed':
+    start = time.time()
+    
+    if event.action=='released':
       value = (1, 0)[value]  
     print(event)
     print(value)
@@ -78,6 +82,15 @@ def joystick_push(event):# if stick is pressed toggle logging state by switching
       filename = "../race_data_"+str(datetime.now())+".csv"
       file_setup(filename)    
     
+    while event.action=='held':
+      print("Button is Held")
+      if time.time() > start + 5:
+          print ("shutdown")
+          value = 0
+          running = 0       
+        
+        
+      
 #### Main Program ####
 
 print("Press Ctrl-C to quit")
@@ -92,17 +105,18 @@ sense.clear()  # Blank the LED matrix
 # Loop around looking for keyboard and things      
     
 value = 0
+running = 1
 
 sense.stick.direction_middle = joystick_push
 
-while True:
-  print("Waiting.....")
+while running:
+  print("Running.....")
 
   sense.show_letter("R",text_colour=[0, 0, 0], back_colour=[255,0,0]) 
   
   while value: # When we are logging
     
-    print ("logging")
+    print ("Logging")
     sense.show_letter("L",text_colour=[0, 0, 0], back_colour=[0,255,0])     
     sense_data = get_sense_data()
     log_data()
@@ -113,4 +127,11 @@ while True:
           for line in batch_data:
               f.write(line + "\n")
           batch_data = []
+
+#Once the above while loop ends its time to shutdown
+print ("Shutting down the Pi") # Displays this on the main screen
+sense.show_message("Shutting down the Pi", scroll_speed=0.02, text_colour=[255,255,255], back_colour=[0,0,0]) # Show this text on the matrix
+sense.clear()  # Blank the LED matrix
+
+os.system('shutdown now -h')
 
