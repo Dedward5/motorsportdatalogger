@@ -79,7 +79,7 @@ def joystick_push(event):# if stick is pressed toggle logging state by switching
     print(event)
     print(value)
     if value == 1: # only create and setup the file if we are going to do logging
-      filename = "../race_data_"+time.strftime("%Y%m%d-%H%M%S")+".csv"
+      filename = "media/usb/race_data_"+time.strftime("%Y%m%d-%H%M%S")+".csv"
       file_setup(filename)    
     
     while event.action=='held':
