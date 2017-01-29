@@ -1,4 +1,4 @@
-# Raceing car data logger for SenseHat equipped Raspberry Pi
+# Racing car data logger for SenseHat equipped Raspberry Pi
 # By David Edwards
 
 #### Loggin Settings #######
