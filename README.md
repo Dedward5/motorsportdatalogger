@@ -10,9 +10,13 @@ https://www.raspberrypi.org/learning/sense-hat-data-logger/worksheet/
 # Requirements
 
 Raspberry Pi
+
 Sense Hat
+
 Raspbian Operating System (I used the Noobs card)
+
 USB thumb drive
+
 Racing car (Optional, but cool)
 
 # Dependencies
