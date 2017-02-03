@@ -7,23 +7,8 @@ This is for a NON ODB based vehicle. The intention is to initialy only use the S
 To get started I drew heavily on the code examples here
 https://www.raspberrypi.org/learning/sense-hat-data-logger/worksheet/
 
-# Requirements
+# Documentation
+Please read the docs in the docs folder to find out how to install and use the datalogger
 
-Raspberry Pi
-
-Sense Hat
-
-Raspbian Operating System (I used the Noobs card)
-
-USB thumb drive
-
-Racing car (Optional, but cool)
-
-# Dependencies
-Make sure you have Python installed
-sudo apt-get install python3-pip
-
-Make sure you have the Sense Hat library
-sudo apt-get install sense-hat
 
 
