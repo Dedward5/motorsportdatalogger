@@ -19,8 +19,8 @@
 
 More help on sensehat is available here https://www.raspberrypi.org/documentation/hardware/sense-hat/README.md
 
-Download my datalogger software from Github
-* Logon to the pi and from terminal run git clone https://github.com/Dedward5/motorsportdatalogger.git
+##Download my datalogger software from Github
+Logon to the pi and from terminal run git clone https://github.com/Dedward5/motorsportdatalogger.git
 
 
 #Setup the datalogger software to run on startup
@@ -29,7 +29,7 @@ sudo nano /etc/rc.local
 
 Add the line at the end
 
-sudo python3 /motorsportdatalogger/datalogger.py
+_italic_ sudo python3 /motorsportdatalogger/datalogger.py _italic_
 
 
 #Mount a USB disk 
