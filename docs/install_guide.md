@@ -24,7 +24,6 @@ Download my datalogger software from Github
 * Logon to the pi and from terminal run git clone https://github.com/Dedward5/motorsportdatalogger.git
 
 
-
 Setup the datalogger software to run on startup
 Edit the rc.local file for example
 sudo nano /etc/rc.local
@@ -34,8 +33,19 @@ Add the line at the end
 sudo python3 /motorsportdatalogger/datalogger.py
 
 
+Mount a USB disk 
+
+The logger tries to save the log files to a mount /media/usb
+
+Follow the instructions here to set up a USB flash disk for this 
+
+http://www.raspberrypi-spy.co.uk/2014/05/how-to-mount-a-usb-flash-disk-on-the-raspberry-pi/
+
 
 Calibrating the compass (Magnatometer)
+If you dont do this you will get wonky results on the magnetometer, be careful here as its tricky to get right. 
+I suggest you try one of the Compass apps to rest you are getting decent readings post calibration.
+
 See https://www.raspberrypi.org/forums/viewtopic.php?f=104&t=109064&p=750616#p810193
 
 sudo apt-get install octave
