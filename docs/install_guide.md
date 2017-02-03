@@ -1,30 +1,29 @@
-Install Guide
+#Install Guide
 
-You will need
+#You will need
 
-A Raspberry Pi https://thepihut.com/products/raspberry-pi-3-model-b
-A SenseHat https://thepihut.com/products/raspberry-pi-sense-hat-astro-pi
-A case like this one http://cpc.farnell.com/camdenboss/cbrpsh-blk/enclosure-for-raspberry-pi-sense/dp/SC13933
-A usb flash disk/thumb drive
-A noobs card for the OS etc like this https://thepihut.com/products/noobs-preinstalled-sd-card
+ 	* Raspberry Pi https://thepihut.com/products/raspberry-pi-3-model-b
+	* SenseHat https://thepihut.com/products/raspberry-pi-sense-hat-astro-pi
+	* case like this one http://cpc.farnell.com/camdenboss/cbrpsh-blk/enclosure-for-raspberry-pi-sense/dp/SC13933
+	* usb flash disk/thumb drive
+	* noobs card for the OS etc like this https://thepihut.com/products/noobs-preinstalled-sd-card
 
 
-Hardware and dependency setup
+#Hardware and dependency setup
 
-* Build up the Pi and SenseHat
-* Run up the noobs card choosing the Raspian build and the other defaults
-* Make sure your packages are up to date by running sudo apt-get update
-* Install sense hat sudo apt-get install sense-hat
-* Now Reboot
+	* Build up the Pi and SenseHat
+	* Run up the noobs card choosing the Raspian build and the other defaults
+	* Make sure your packages are up to date by running sudo apt-get update
+	* Install sense hat sudo apt-get install sense-hat
+	* Now Reboot
 
 More help on sensehat is available here https://www.raspberrypi.org/documentation/hardware/sense-hat/README.md
-
 
 Download my datalogger software from Github
 * Logon to the pi and from terminal run git clone https://github.com/Dedward5/motorsportdatalogger.git
 
 
-Setup the datalogger software to run on startup
+#Setup the datalogger software to run on startup
 Edit the rc.local file for example
 sudo nano /etc/rc.local
 
@@ -33,7 +32,7 @@ Add the line at the end
 sudo python3 /motorsportdatalogger/datalogger.py
 
 
-Mount a USB disk 
+#Mount a USB disk 
 
 The logger tries to save the log files to a mount /media/usb
 
@@ -42,7 +41,8 @@ Follow the instructions here to set up a USB flash disk for this
 http://www.raspberrypi-spy.co.uk/2014/05/how-to-mount-a-usb-flash-disk-on-the-raspberry-pi/
 
 
-Calibrating the compass (Magnatometer)
+#Calibrating the compass (Magnatometer)
+
 If you dont do this you will get wonky results on the magnetometer, be careful here as its tricky to get right. 
 I suggest you try one of the Compass apps to rest you are getting decent readings post calibration.
 
