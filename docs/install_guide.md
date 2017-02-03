@@ -29,7 +29,7 @@ sudo nano /etc/rc.local
 
 Add the line at the end
 
-_italic_ sudo python3 /motorsportdatalogger/datalogger.py _italic_
+_sudo python3 /motorsportdatalogger/datalogger.py_
 
 
 #Mount a USB disk 
