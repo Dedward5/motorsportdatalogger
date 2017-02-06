@@ -3,10 +3,10 @@
 #You will need:
 
 * Raspberry Pi https://thepihut.com/products/raspberry-pi-3-model-b
-* SenseHat [link]https://thepihut.com/products/raspberry-pi-sense-hat-astro-pi
-* case like this one [link]http://cpc.farnell.com/camdenboss/cbrpsh-blk/enclosure-for-raspberry-pi-sense/dp/SC13933
+* SenseHat https://thepihut.com/products/raspberry-pi-sense-hat-astro-pi
+* case like this one http://cpc.farnell.com/camdenboss/cbrpsh-blk/enclosure-for-raspberry-pi-sense/dp/SC13933
 * usb flash disk/thumb drive
-* noobs card for the OS etc like this [link]https://thepihut.com/products/noobs-preinstalled-sd-card
+* noobs card for the OS etc like this https://thepihut.com/products/noobs-preinstalled-sd-card
 
 
 #Hardware and dependency setup:
@@ -17,10 +17,10 @@
 * Install sense hat sudo apt-get install sense-hat
 * Now Reboot
 
-More help on sensehat is available here [link]https://www.raspberrypi.org/documentation/hardware/sense-hat/README.md
+More help on sensehat is available here https://www.raspberrypi.org/documentation/hardware/sense-hat/README.md
 
 ##Download my datalogger software from Github
-Logon to the pi and from terminal run git clone [ink]https://github.com/Dedward5/motorsportdatalogger.git
+Logon to the pi and from terminal run git clone https://github.com/Dedward5/motorsportdatalogger.git
 
 
 #Setup the datalogger software to run on startup
@@ -38,7 +38,7 @@ The logger tries to save the log files to a mount /media/usb
 
 Follow the instructions here to set up a USB flash disk for this 
 
-[link]http://www.raspberrypi-spy.co.uk/2014/05/how-to-mount-a-usb-flash-disk-on-the-raspberry-pi/
+http://www.raspberrypi-spy.co.uk/2014/05/how-to-mount-a-usb-flash-disk-on-the-raspberry-pi/
 
 
 #Calibrating the compass (Magnatometer)
@@ -46,7 +46,7 @@ Follow the instructions here to set up a USB flash disk for this
 If you dont do this you will get wonky results on the magnetometer, be careful here as its tricky to get right. 
 I suggest you try one of the Compass apps to rest you are getting decent readings post calibration.
 
-See [link]https://www.raspberrypi.org/forums/viewtopic.php?f=104&t=109064&p=750616#p810193
+See ]https://www.raspberrypi.org/forums/viewtopic.php?f=104&t=109064&p=750616#p810193
 
 sudo apt-get install octave
 cd
