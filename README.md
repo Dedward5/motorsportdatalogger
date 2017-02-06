@@ -8,7 +8,7 @@ To get started I drew heavily on the code examples here
 https://www.raspberrypi.org/learning/sense-hat-data-logger/worksheet/
 
 # Documentation
-Please __read the docs__ in the docs folder to find out how to install and use the datalogger
+Please __read the docs__ in the ../docs folder to find out how to install and use the datalogger
 
 
 
