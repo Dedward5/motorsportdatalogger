@@ -1,5 +1,9 @@
 #Understanding the data
 
+The file is saved in the mount /media/usb (see the install_guide)
+
+The filename is race_data_YYYYMMDD-HHMMSS.csv where the date/time is the date/time the logging was initialised (joystick pressed)
+
 The file produced has the following headings
 
 temp_h	temp_p	humidity	pressure	pitch	roll	yaw	mag_x	mag_y	mag_z	accel_x	accel_y	accel_z	gyro_x	gyro_y	gyro_z	timestamp
