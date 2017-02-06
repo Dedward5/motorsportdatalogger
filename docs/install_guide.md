@@ -2,7 +2,7 @@
 
 #You will need:
 
-* Raspberry Pi [link]https://thepihut.com/products/raspberry-pi-3-model-b
+* Raspberry Pi https://thepihut.com/products/raspberry-pi-3-model-b
 * SenseHat [link]https://thepihut.com/products/raspberry-pi-sense-hat-astro-pi
 * case like this one [link]http://cpc.farnell.com/camdenboss/cbrpsh-blk/enclosure-for-raspberry-pi-sense/dp/SC13933
 * usb flash disk/thumb drive
