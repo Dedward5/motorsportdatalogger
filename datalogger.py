@@ -109,29 +109,32 @@ running = 1
 
 sense.stick.direction_middle = joystick_push
 
-while running:
-  print("Running.....")
+try:  
+  while running:
+    print("Running.....")
 
-  sense.show_letter("R",text_colour=[0, 0, 0], back_colour=[255,0,0]) 
+    sense.show_letter("R",text_colour=[0, 0, 0], back_colour=[255,0,0]) 
   
-  while value: # When we are logging
+    while value: # When we are logging
     
-    print ("Logging")
-    sense.show_letter("L",text_colour=[0, 0, 0], back_colour=[0,255,0])     
-    sense_data = get_sense_data()
-    log_data()
+      print ("Logging")
+      sense.show_letter("L",text_colour=[0, 0, 0], back_colour=[0,255,0])     
+      sense_data = get_sense_data()
+      log_data()
 
-    if len(batch_data) >= WRITE_FREQUENCY:
-      print("Writing to file..")
-      with open(filename,"a") as f:
-          for line in batch_data:
-              f.write(line + "\n")
-          batch_data = []
+      if len(batch_data) >= WRITE_FREQUENCY:
+        print("Writing to file..")
+        with open(filename,"a") as f:
+            for line in batch_data:
+                f.write(line + "\n")
+            batch_data = []
 
-#Once the above while loop ends its time to shutdown
-print ("Shutting down the Pi") # Displays this on the main screen
-sense.show_message("Shutting down the Pi", scroll_speed=0.02, text_colour=[255,255,255], back_colour=[0,0,0]) # Show this text on the matrix
-sense.clear()  # Blank the LED matrix
+  #Once the above while loop ends its time to shutdown
+  print ("Shutting down the Pi") # Displays this on the main screen
+  sense.show_message("Shutting down the Pi", scroll_speed=0.02, text_colour=[255,255,255], back_colour=[0,0,0]) # Show this text on the matrix
+  sense.clear()  # Blank the LED matrix
 
-os.system('shutdown now -h')
+  os.system('shutdown now -h')
 
+except KeyboardInterrupt:
+  print "Bye!"
