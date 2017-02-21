@@ -1,21 +1,40 @@
 # Racing car data logger for SenseHat equipped Raspberry Pi
-# By David Edwards
+# By David Edwards (Dedward5)
+#
+# Find the project on GitHUb at https://github.com/Dedward5/motorsportdatalogger
 
-#### Loggin Settings #######
+
+#### Configuration and  Settings #######
+
+import configparser
+
+configparser = configparser.RawConfigParser()   
+configparser.read("options.cfg")
+
+camera_opt = configparser.get('add_ons', 'camera')
+
+print ("Camera option = ",camera_opt) #display the camera option setting on screen as a debug helper
 
 FILENAME = ""
 WRITE_FREQUENCY = 50
 
-#### Libraries #####
+############################################ Libraries ############################################
 
 import sys # revisit to see if needed
 import os #used for the shutdown
 import time # revisit to see if needed
 
+#Only import camera if camera option setup in config file
+
+If camera_opt == "yes":
+	from picamera import PiCamera
+	camera = PiCamera()
+
+
 from sense_hat import SenseHat # for core sensehat functions
 from datetime import datetime # for date and time function
 
-#### Functions ####
+############################################ Functions ############################################
 
 def log_data ():
   output_string = ",".join(str(value) for value in sense_data)
@@ -78,7 +97,8 @@ def joystick_push(event):# if stick is pressed toggle logging state by switching
       value = (1, 0)[value]  
       if value == 1: # only create and setup the file if we are going to do logging
         filename = "/media/usb/race_data_"+time.strftime("%Y%m%d-%H%M%S")+".csv"
-        file_setup(filename)    
+        file_setup(filename)
+        camera.start_recording("/media/usb/race_video_"+time.strftime("%Y%m%d-%H%M%S")+".h264")    
     print(event)
     print(value)
     
@@ -91,7 +111,7 @@ def joystick_push(event):# if stick is pressed toggle logging state by switching
         
         
       
-#### Main Program ####
+################################################# Main Program #####################################
 
 print("Press Ctrl-C to quit")
 
@@ -100,21 +120,22 @@ sense = SenseHat()
 batch_data= []
 
 sense.clear()  # Blank the LED matrix
-# sense.show_message("Started", scroll_speed=0.05, text_colour=[255,255,255], back_colour=[0,0,0]) # Show some text on matrix
-    
+
 # Loop around looking for keyboard and things      
     
 value = 0
 running = 1
 
-sense.stick.direction_middle = joystick_push
+sense.stick.direction_middle = joystick_push  #call the callback (function) joystick_push if pressed at any time including in a loop
+
 
 try:  
   while running:
     print("Running.....")
 
     sense.show_letter("R",text_colour=[0, 0, 0], back_colour=[255,0,0]) 
-  
+  	camera.stop_recording() #bit hacky to have this here as camera may not be recording and this will keep being run.
+  	
     while value: # When we are logging
     
       print ("Logging")
