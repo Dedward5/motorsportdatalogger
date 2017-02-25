@@ -4,7 +4,7 @@
 # Find the project on GitHUb at https://github.com/Dedward5/motorsportdatalogger
 
 
-#### Configuration and  Settings #######
+####################################### Configuration and  Settings ###############################
 
 import configparser
 
@@ -21,10 +21,10 @@ WRITE_FREQUENCY = 50
 ############################################ Libraries ############################################
 
 import sys # revisit to see if needed
-import os #used for the shutdown
-import time # revisit to see if needed
+import os # used for the shutdown
+import time # used for time functions
 
-#Only import camera if camera option setup in config file
+# Only import camera if camera option setup in config file
 
 If camera_opt == "yes":
 	from picamera import PiCamera
