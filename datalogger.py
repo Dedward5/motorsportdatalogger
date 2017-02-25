@@ -92,40 +92,39 @@ def get_sense_data(): # Main function to get all the sense data
 def joystick_push(event): # if stick is pressed toggle logging state by switching "value" 
     global value
     global running
-    global filename
+    # global filename
     start = time.time()
-    
     if event.action=='released':
-    	time.sleep(0.5) # wait half a second to avoid button bounce
-		value = (1, 0)[value]  # toggle the values for logging 
-      	if value == 1: # we are going to call the start logging function
-      		start_logging() 
-      	else:
-      		stop_logging()	
+      value = (1, 0)[value] 
+      if value == 1:
+    	  start_logging() 
+      else:
+      	  stop_logging()	
     
     while event.action=='held':
       	print("Button is held")
       	if time.time() > start + 4:
         	shutdown_pi       
         
-def start_logging ()	
-        print ("Logging")
-      	sense.show_letter("L",text_colour=[0, 0, 0], back_colour=[0,255,0])
-        filename = "/media/usb/race_data_"+time.strftime("%Y%m%d-%H%M%S")+".csv"
-        file_setup(filename)
-        camera.start_recording("/media/usb/race_video_"+time.strftime("%Y%m%d-%H%M%S")+".h264")   # starts the camera recording 
-    	# print(event)
-    	# print(value)
+def start_logging ():	
+	print ("Logging")
+	global filename
+	sense.show_letter("L",text_colour=[0, 0, 0], back_colour=[0,255,0])
+	filename = "/media/usb/race_data_"+time.strftime("%Y%m%d-%H%M%S")+".csv"
+	file_setup(filename)
+	camera.start_recording("/media/usb/race_video_"+time.strftime("%Y%m%d-%H%M%S")+".h264")   # starts the camera recording 
+	# print(event)
+	# print(value)
         
-def stop_logging ()
-		sense.show_letter("R",text_colour=[0, 0, 0], back_colour=[255,0,0]) 
-		camera.stop_recording() # stops the camera from recording
+def stop_logging ():
+	sense.show_letter("R",text_colour=[0, 0, 0], back_colour=[255,0,0]) 
+	camera.stop_recording() # stops the camera from recording
   		
-def shutdown_pi ()
-		print ("Shutting down the Pi") # displays this on the main screen
-  		sense.show_message("Shutting down the Pi", scroll_speed=0.02, text_colour=[255,255,255], back_colour=[0,0,0]) # show this text on the matrix
-  		sense.clear()  # blank the LED matrix
-  		os.system('shutdown now -h') # call the OS command to shutdown	 		
+def shutdown_pi ():
+	print ("Shutting down the Pi") # displays this on the main screen
+	sense.show_message("Shutting down the Pi", scroll_speed=0.02, text_colour=[255,255,255], back_colour=[0,0,0]) # show this text on the matrix
+	sense.clear()  # blank the LED matrix
+	os.system('shutdown now -h') # call the OS command to shutdown	 		
       
 ################################################# Main Program #####################################
 
@@ -139,22 +138,21 @@ sense.stick.direction_middle = joystick_push  #call the callback (function) joys
  
 value = 0 
 
-# running = 1 -- Not needing in this code restructure
+running = 1
 
-try: # Loop around until CRTL-C keyboard interrupt   
+
+while running: # Loop around until CRTL-C keyboard interrupt   
  
-  print("Running.....") # prints out to the main screen
+	print("Ready.....") # prints to the main screen
   
-    while value: # When we are logging
-      sense_data = get_sense_data()
-      log_data()
-      if len(batch_data) >= WRITE_FREQUENCY:
-        print("Writing to file..")
-        with open(filename,"a") as f:
-            for line in batch_data:
-                f.write(line + "\n")
-            batch_data = []
+	while value: # When we are logging
+		sense_data = get_sense_data()
+		log_data()
+		if len(batch_data) >= WRITE_FREQUENCY:
+			print("Writing to file..")
+			with open(filename,"a") as f:
+				for line in batch_data:
+					f.write(line + "\n")
+				batch_data = []
 
   
-except KeyboardInterrupt:
-  print "Bye!"
