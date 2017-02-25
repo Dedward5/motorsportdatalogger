@@ -90,21 +90,21 @@ def get_sense_data(): # Main function to get all the sense data
   return sense_data
 
 def joystick_push(event): # if stick is pressed toggle logging state by switching "value" 
-    global value
-    global running
-    # global filename
-    start = time.time()
-    if event.action=='released':
-      value = (1, 0)[value] 
-      if value == 1:
-    	  start_logging() 
-      else:
-      	  stop_logging()	
+	global value
+	global running
+	# global filename
+	start = time.time()
+	if event.action=='released':
+		value = (1, 0)[value] 
+		if value == 1:
+			start_logging() 
+		else:
+			stop_logging()	
     
-    while event.action=='held':
-      	print("Button is held")
-      	if time.time() > start + 4:
-        	shutdown_pi       
+	while event.action=='held':
+		print("Button is held")
+		if time.time() > start + 4:
+			shutdown_pi       
         
 def start_logging ():	
 	print ("Logging")
