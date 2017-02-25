@@ -107,18 +107,20 @@ def joystick_push(event): # if stick is pressed toggle logging state by switchin
 			shutdown_pi()       
         
 def start_logging ():	
-	print ("Logging")
+	print ("Logging started")
 	global filename
 	sense.show_letter("L",text_colour=[0, 0, 0], back_colour=[0,255,0])
 	filename = "/media/usb/race_data_"+time.strftime("%Y%m%d-%H%M%S")+".csv"
 	file_setup(filename)
-	camera.start_recording("/media/usb/race_video_"+time.strftime("%Y%m%d-%H%M%S")+".h264")   # starts the camera recording 
-	# print(event)
-	# print(value)
+	if pi_camera_installed == "yes":
+		camera.start_recording("/media/usb/race_video_"+time.strftime("%Y%m%d-%H%M%S")+".h264")   # starts the camera recording 
+
         
 def stop_logging ():
+	print("Logging stopped, still ready") # prints to the main screen
 	sense.show_letter("R",text_colour=[0, 0, 0], back_colour=[255,0,0]) 
-	camera.stop_recording() # stops the camera from recording
+	if pi_camera_installed == "yes":
+		camera.stop_recording() # stops the camera from recording
   		
 def shutdown_pi ():
 	print ("Shutting down the Pi") # displays this on the main screen
@@ -140,16 +142,17 @@ value = 0
 
 running = 1
 
+print("Ready") # prints to the main screen
 
 while running: # Loop around until CRTL-C keyboard interrupt   
  
-	print("Ready.....") # prints to the main screen
+	# print(".")  prints to the main screen after "Ready" not the postion of the comma
   
 	while value: # When we are logging
 		sense_data = get_sense_data()
 		log_data()
 		if len(batch_data) >= WRITE_FREQUENCY:
-			print("Writing to file..")
+			print("Writing to file")
 			with open(filename,"a") as f:
 				for line in batch_data:
 					f.write(line + "\n")
