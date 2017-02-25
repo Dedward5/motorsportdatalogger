@@ -11,9 +11,11 @@ import configparser
 configparser = configparser.RawConfigParser()   
 configparser.read("options.cfg")
 
-camera_opt = configparser.get('add_ons', 'camera')
+pi_camera_installed = configparser.get('add_ons', 'pi_camera')
 
-print ("Camera option = ",camera_opt) #display the camera option setting on screen as a debug helper
+print ("Datalogger started")
+print ("Configuration settings")
+print ("Pi camera option = ",pi_camera_installed) # display the camera option setting on screen as a debug helper
 
 FILENAME = ""
 WRITE_FREQUENCY = 50
@@ -26,7 +28,7 @@ import time # used for time functions
 
 # Only import camera if camera option setup in config file
 
-If camera_opt == "yes":
+if pi_camera_installed == "yes":
 	from picamera import PiCamera
 	camera = PiCamera()
 
@@ -87,62 +89,65 @@ def get_sense_data(): # Main function to get all the sense data
 
   return sense_data
 
-def joystick_push(event):# if stick is pressed toggle logging state by switching "value" 
+def joystick_push(event): # if stick is pressed toggle logging state by switching "value" 
     global value
     global running
     global filename
     start = time.time()
     
     if event.action=='released':
-      value = (1, 0)[value]  
-      if value == 1: # only create and setup the file if we are going to do logging
-        filename = "/media/usb/race_data_"+time.strftime("%Y%m%d-%H%M%S")+".csv"
-        file_setup(filename)
-        camera.start_recording("/media/usb/race_video_"+time.strftime("%Y%m%d-%H%M%S")+".h264")    
-    print(event)
-    print(value)
+    	time.sleep(0.5) # wait half a second to avoid button bounce
+		value = (1, 0)[value]  # toggle the values for logging 
+      	if value == 1: # we are going to call the start logging function
+      		start_logging() 
+      	else:
+      		stop_logging()	
     
     while event.action=='held':
-      print("Button is Held")
-      if time.time() > start + 5:
-          print ("shutdown")
-          value = 0
-          running = 0       
+      	print("Button is held")
+      	if time.time() > start + 4:
+        	shutdown_pi       
         
+def start_logging ()	
+        print ("Logging")
+      	sense.show_letter("L",text_colour=[0, 0, 0], back_colour=[0,255,0])
+        filename = "/media/usb/race_data_"+time.strftime("%Y%m%d-%H%M%S")+".csv"
+        file_setup(filename)
+        camera.start_recording("/media/usb/race_video_"+time.strftime("%Y%m%d-%H%M%S")+".h264")   # starts the camera recording 
+    	# print(event)
+    	# print(value)
         
+def stop_logging ()
+		sense.show_letter("R",text_colour=[0, 0, 0], back_colour=[255,0,0]) 
+		camera.stop_recording() # stops the camera from recording
+  		
+def shutdown_pi ()
+		print ("Shutting down the Pi") # displays this on the main screen
+  		sense.show_message("Shutting down the Pi", scroll_speed=0.02, text_colour=[255,255,255], back_colour=[0,0,0]) # show this text on the matrix
+  		sense.clear()  # blank the LED matrix
+  		os.system('shutdown now -h') # call the OS command to shutdown	 		
       
 ################################################# Main Program #####################################
 
 print("Press Ctrl-C to quit")
 
-time.sleep(1)
 sense = SenseHat()
-batch_data= []
-
-sense.clear()  # Blank the LED matrix
-
-# Loop around looking for keyboard and things      
-    
-value = 0
-running = 1
-
+batch_data= [] # creates an empty list called batch_data 
+sense.clear()  # blank the LED matrix  
+sense.show_letter("R",text_colour=[0, 0, 0], back_colour=[255,0,0])  # prints R on the matrix to indicate "Ready"
 sense.stick.direction_middle = joystick_push  #call the callback (function) joystick_push if pressed at any time including in a loop
+ 
+value = 0 
 
+# running = 1 -- Not needing in this code restructure
 
-try:  
-  while running:
-    print("Running.....")
-
-    sense.show_letter("R",text_colour=[0, 0, 0], back_colour=[255,0,0]) 
-  	camera.stop_recording() #bit hacky to have this here as camera may not be recording and this will keep being run.
-  	
+try: # Loop around until CRTL-C keyboard interrupt   
+ 
+  print("Running.....") # prints out to the main screen
+  
     while value: # When we are logging
-    
-      print ("Logging")
-      sense.show_letter("L",text_colour=[0, 0, 0], back_colour=[0,255,0])     
       sense_data = get_sense_data()
       log_data()
-
       if len(batch_data) >= WRITE_FREQUENCY:
         print("Writing to file..")
         with open(filename,"a") as f:
@@ -150,12 +155,6 @@ try:
                 f.write(line + "\n")
             batch_data = []
 
-  #Once the above while loop ends its time to shutdown
-  print ("Shutting down the Pi") # Displays this on the main screen
-  sense.show_message("Shutting down the Pi", scroll_speed=0.02, text_colour=[255,255,255], back_colour=[0,0,0]) # Show this text on the matrix
-  sense.clear()  # Blank the LED matrix
-
-  os.system('shutdown now -h')
-
+  
 except KeyboardInterrupt:
   print "Bye!"
