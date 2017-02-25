@@ -95,6 +95,7 @@ def joystick_push(event): # if stick is pressed toggle logging state by switchin
 	# global filename
 	start = time.time()
 	if event.action=='released':
+		time.sleep(0.5) #wait half a second to reduce button bounce
 		value = (1, 0)[value] 
 		if value == 1:
 			start_logging() 
