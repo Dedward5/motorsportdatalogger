@@ -11,11 +11,16 @@ import configparser
 configparser = configparser.RawConfigParser()   
 configparser.read("options.cfg")
 
-pi_camera_installed = configparser.get('add_ons', 'pi_camera')
+pi_camera_installed = configparser.get('video_options', 'pi_camera')
+pi_camera_vertical_flip = configparser.get('video_options', 'flip_pi_vertical')
+pi_camera_horizontal_flip = configparser.get('video_options', 'flip_pi_horizontal')
 
 print ("Datalogger started")
 print ("Configuration settings")
 print ("Pi camera option = ",pi_camera_installed) # display the camera option setting on screen as a debug helper
+print ("Pi camera vertical flip  = ",pi_camera_vertical_flip) # display the camera option setting on screen as a debug he$
+print ("Pi camera horizontal flip  = ",pi_camera_horizontal_flip) # display the camera option setting on screen as a debug he$
+
 
 FILENAME = ""
 WRITE_FREQUENCY = 50
@@ -26,12 +31,15 @@ import sys # revisit to see if needed
 import os # used for the shutdown
 import time # used for time functions
 
-# Only import camera if camera option setup in config file
+# Import and setup the camera if camera option set in config file
 
 if pi_camera_installed == "yes":
 	from picamera import PiCamera
 	camera = PiCamera()
-
+	if pi_camera_vertical_flip == "yes": 
+		camera.vflip = True
+	if pi_camera_horizontal_flip == "yes":
+		camera.hflip = True
 
 from sense_hat import SenseHat # for core sensehat functions
 from datetime import datetime # for date and time function
