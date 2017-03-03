@@ -14,13 +14,17 @@ configparser.read("options.cfg")
 pi_camera_installed = configparser.get('video_options', 'pi_camera')
 pi_camera_vertical_flip = configparser.get('video_options', 'flip_pi_vertical')
 pi_camera_horizontal_flip = configparser.get('video_options', 'flip_pi_horizontal')
+do_overlay_sensedata = configparser.get('video_options', 'overlay_sense_data')
+do_overlay_gpsdata = configparser.get('video_options', 'overlay_gps_data')
+chosenpath =  configparser.get('general_options', 'file_path')
 
 print ("Datalogger started")
 print ("Configuration settings")
 print ("Pi camera option = ",pi_camera_installed) # display the camera option setting on screen as a debug helper
 print ("Pi camera vertical flip  = ",pi_camera_vertical_flip) # display the camera option setting on screen as a debug he$
 print ("Pi camera horizontal flip  = ",pi_camera_horizontal_flip) # display the camera option setting on screen as a debug he$
-
+print ("Overlay sense data on video = ",do_overlay_sensedata) # display the config option for video overlay of sense data
+print ("Overlay GPS data on video = ",do_overlay_gpsdata) # display the config option for the video overlay of GPS data
 
 FILENAME = ""
 WRITE_FREQUENCY = 50
@@ -40,6 +44,7 @@ if pi_camera_installed == "yes":
 		camera.vflip = True
 	if pi_camera_horizontal_flip == "yes":
 		camera.hflip = True
+
 
 from sense_hat import SenseHat # for core sensehat functions
 from datetime import datetime # for date and time function
@@ -62,9 +67,11 @@ def file_setup(filename):
       f.write(",".join(str(value) for value in header)+ "\n")
 
 def get_sense_data(): # Main function to get all the sense data
+  global sense_overlay_data
   sense_data=[]
 
   sense_data.append(datetime.now())
+
 
   acc = sense.get_accelerometer_raw()
   x = acc["x"]
@@ -77,6 +84,7 @@ def get_sense_data(): # Main function to get all the sense data
   pitch = o["pitch"]
   roll = o["roll"]
   sense_data.extend([pitch,roll,yaw])
+
 
   mag = sense.get_compass_raw()
   mag_x = mag["x"]
@@ -95,7 +103,9 @@ def get_sense_data(): # Main function to get all the sense data
   sense_data.append(sense.get_humidity())
   sense_data.append(sense.get_pressure())
 
-
+  sense_overlay_data = time.strftime("%H:%M:%S %d/%m/%Y") + " Accel " + str(round(y,2)) + " Corner " + str(round(x,2))
+ 
+  print(sense_overlay_data)
 
   return sense_data
 
@@ -126,6 +136,7 @@ def start_logging ():
 	if pi_camera_installed == "yes":
 		camera.start_recording("/media/usb/race_video_"+time.strftime("%Y%m%d-%H%M%S")+".h264")   # starts the camera recording 
 
+
         
 def stop_logging ():
 	print("Logging stopped, still ready") # prints to the main screen
@@ -138,6 +149,19 @@ def shutdown_pi ():
 	sense.show_message("Shutting down the Pi", scroll_speed=0.02, text_colour=[255,255,255], back_colour=[0,0,0]) # show this text on the matrix
 	sense.clear()  # blank the LED matrix
 	os.system('shutdown now -h') # call the OS command to shutdown	 		
+
+
+def video_overlay ():
+	if do_overlay_sensedata == "yes": 
+		print ("overlay Sense data")
+	if do_overlay_gpsdata == "yes":
+		print ("overlay GPS data")
+	
+	camera.annotate_background = True
+	camera.annotate_text = sense_overlay_data
+
+
+
       
 ################################################# Main Program #####################################
 
@@ -162,6 +186,9 @@ while running: # Loop around until CRTL-C keyboard interrupt
 	while value: # When we are logging
 		sense_data = get_sense_data()
 		log_data()
+		video_overlay()
+	
+
 		if len(batch_data) >= WRITE_FREQUENCY:
 			print("Writing to file")
 			with open(filename,"a") as f:
