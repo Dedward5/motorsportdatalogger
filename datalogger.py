@@ -105,7 +105,7 @@ def get_sense_data(): # Main function to get all the sense data
 
   sense_overlay_data = time.strftime("%H:%M:%S %d/%m/%Y") + " Accel " + str(round(y,2)) + " Corner " + str(round(x,2))
  
-  print(sense_overlay_data)
+  # print(sense_overlay_data)  #prints the overlay data on the screen, left to aid debugging if needed
 
   return sense_data
 
@@ -161,7 +161,6 @@ def video_overlay ():
 	camera.annotate_text = sense_overlay_data
 
 
-
       
 ################################################# Main Program #####################################
 
@@ -187,7 +186,6 @@ while running: # Loop around until CRTL-C keyboard interrupt
 		sense_data = get_sense_data()
 		log_data()
 		video_overlay()
-	
 
 		if len(batch_data) >= WRITE_FREQUENCY:
 			print("Writing to file")
