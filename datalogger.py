@@ -5,9 +5,9 @@
 
 from sense_hat import SenseHat # for core sensehat functions #import this first so we can use sense hat display
 
-# sense = senseHat ()
+# sense = senseHat()
 
-# sense.show_letter("!",text_colour=[0, 0, 0], back_colour=[255,0,0])  # prints ! on the matrix to indicate "starting up"
+# sense.show_letter("s",text_colour=[0, 0, 0], back_colour=[255,0,0])  # prints ! on the matrix to indicate "starting up"
 
 ####################################### Configuration and  Settings ###############################
 
@@ -74,7 +74,7 @@ def file_setup(filename): # setup the CSV headers using the right options for an
   "gyro_x","gyro_y","gyro_z",
   "temp_h","temp_p","humidity","pressure"]
   if usb_gps_installed == "yes":
-  	header.extend["alt","lat","lon","speed"]
+  	header += "alt","lat","lon","speed"
 
   with open(filename,"w") as f:
       f.write(",".join(str(value) for value in header)+ "\n")
@@ -134,9 +134,9 @@ def get_gps_data (): #function that gets the GPS data
 
 	sense_data.extend([alt,lat,lon,speed])
 	
-	gps_overlay_data = " Altitude = " , str(round(alt,2)), " Speed = " , str(round(speed,2))
+	gps_overlay_data = " Altitude = "  + alt + " Speed = " + speed
 
-	print(gps_overlay_data)  #prints the overlay data on the screen, left to aid debugging if need
+	print("GPS Data", gps_overlay_data)  #prints the overlay data on the screen, left to aid debugging if need
   	
 	return gps_data
   
@@ -163,24 +163,28 @@ def start_logging ():
 	print ("Logging started, press joystick button to stop")
 	global filename
 	sense.show_letter("L",text_colour=[0, 0, 0], back_colour=[0,255,0])
-	filename = chosen_path + "/race_data_"+time.strftime("%Y%m%d-%H%M%S")+".csv"
+	filename =  "/media/usb/race_data_"+time.strftime("%Y%m%d-%H%M%S")+".csv"
 	file_setup(filename)
 	if pi_camera_installed == "yes":
-		camera.start_recording(chosen_path + "/race_video_"+time.strftime("%Y%m%d-%H%M%S")+".h264")   # starts the camera recording 
+		camera.start_recording("/media/usb/race_video_"+time.strftime("%Y%m%d-%H%M%S")+".h264")   # starts the camera recording 
 
 def log_data ():
 	output_string = ",".join(str(value) for value in sense_data)
-	output_string.append = ",".join(str(value) for value in gps_data)
+	gps_output_string = ",".join(gps_data)
+	output_string += gps_output_string
 	batch_data.append(output_string)
   
 def video_overlay ():
 	if do_overlay_sensedata == "yes": 
-		print ("overlay Sense data")
 		camera.annotate_background = True
-		camera.annotate_text = sense_overlay_data	
-		
-	if do_overlay_gpsdata == "yes":
-		camera.annotate_text = gps_overlay_data
+		if do_overlay_gpsdata == "yes":
+			print ("Annotate Sense + GPS")     
+			camera.annotate_text = sense_overlay_data+gps_overlay_data
+		else:	
+			print("Annotate Sense data only, no GPS")
+			camera.annotate_text = sense_overlay_data		
+	else:
+		print("Overlay disabled")
         
 def stop_logging ():
 	print("Logging stopped, still ready") # prints to the main screen
