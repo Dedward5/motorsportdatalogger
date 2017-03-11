@@ -5,7 +5,9 @@
 
 from sense_hat import SenseHat # for core sensehat functions #import this first so we can use sense hat display
 
-sense.show_letter("!",text_colour=[0, 0, 0], back_colour=[255,0,0])  # prints ! on the matrix to indicate "starting up"
+# sense = senseHat ()
+
+# sense.show_letter("!",text_colour=[0, 0, 0], back_colour=[255,0,0])  # prints ! on the matrix to indicate "starting up"
 
 ####################################### Configuration and  Settings ###############################
 
@@ -71,7 +73,7 @@ def file_setup(filename): # setup the CSV headers using the right options for an
   "gyro_x","gyro_y","gyro_z",
   "temp_h","temp_p","humidity","pressure"]
   if usb_gps_installed == "yes":
-  	header.extend[,"alt","lat","lon","speed"]
+  	header.extend["alt","lat","lon","speed"]
 
   with open(filename,"w") as f:
       f.write(",".join(str(value) for value in header)+ "\n")
@@ -122,10 +124,10 @@ def get_gps_data (): #function that gets the GPS data
 	gps_data=[]
 	
 	data_stream.unpack(new_data)
-    alt = data_stream.TPV['alt'])
-    lat = data_stream.TPV['lat'])
-    lon  = data_stream.TPV['lon'])
-    speed = data_stream.TPV['speed'])
+	alt = data_stream.TPV['alt']
+	lat = data_stream.TPV['lat']
+	lon  = data_stream.TPV['lon']
+	speed = data_stream.TPV['speed']
 
 	sense_data.extend([alt,lat,lon,speed])
 	
@@ -133,7 +135,7 @@ def get_gps_data (): #function that gets the GPS data
 
 	print(gps_overlay_data)  #prints the overlay data on the screen, left to aid debugging if need
   	
-  	return gps_data
+	return gps_data
   
 def joystick_push(event): # if stick is pressed toggle logging state by switching "value" 
 	global value
