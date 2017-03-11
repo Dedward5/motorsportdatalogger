@@ -34,11 +34,12 @@ print ("Overlay sense data on video = ",do_overlay_sensedata) # display the conf
 print ("Overlay GPS data on video = ",do_overlay_gpsdata) # display the config option for the video overlay of GPS data
 print (" GPS installed = ",usb_gps_installed) # display the config option for the USB BPS
 
-# FILENAME = ""
+FILENAME = ""
 WRITE_FREQUENCY = 50
 
 ############################################ Libraries ############################################
 
+ 
 import sys # revisit to see if needed
 import os # used for the shutdown
 import time # used for time functions
@@ -57,11 +58,11 @@ if pi_camera_installed == "yes":
 		
 # Import and setup the GPS if GPS option set in the config file		
 if usb_gps_installed == "yes":
-	from gps3 import gps3
-	gps_socket = gps3.GPSDSocket()
-	data_stream = gps3.DataStream()
-	gps_socket.connect()
-	gps_socket.watch()
+
+	from gps3.agps3threaded import AGPS3mechanism
+	agps_thread = AGPS3mechanism()  # Instantiate AGPS3 Mechanisms
+	agps_thread.stream_data()  # From localhost (), or other hosts, by example, (host='gps.ddns.net')
+	agps_thread.run_thread()  # Throttle time to sleep after an empty lookup, default '()' 0.2 two tenths of a second
 
 ############################################ Functions ############################################
 
@@ -122,12 +123,14 @@ def get_sense_data(): # Main function to get all the sense data
 def get_gps_data (): #function that gets the GPS data
 	global gps_overlay_data
 	gps_data=[]
-	
-	data_stream.unpack(new_data)
-	alt = data_stream.TPV['alt']
-	lat = data_stream.TPV['lat']
-	lon  = data_stream.TPV['lon']
-	speed = data_stream.TPV['speed']
+
+
+	# print(                   agps_thread.data_stream.time)
+	lat = format(agps_thread.data_stream.lat)
+	lon = format(agps_thread.data_stream.lon)
+	speed = format(agps_thread.data_stream.speed)
+	alt = format(agps_thread.data_stream.alt)	
+
 
 	sense_data.extend([alt,lat,lon,speed])
 	
