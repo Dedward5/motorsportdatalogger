@@ -3,6 +3,11 @@
 #
 # Find the project on GitHUb at https://github.com/Dedward5/motorsportdatalogger
 
+from sense_hat import SenseHat # for core sensehat functions #import this first so we can use sense hat display
+
+# sense = senseHat()
+
+# sense.show_letter("s",text_colour=[0, 0, 0], back_colour=[255,0,0])  # prints ! on the matrix to indicate "starting up"
 
 ####################################### Configuration and  Settings ###############################
 
@@ -16,7 +21,9 @@ pi_camera_vertical_flip = configparser.get('video_options', 'flip_pi_vertical')
 pi_camera_horizontal_flip = configparser.get('video_options', 'flip_pi_horizontal')
 do_overlay_sensedata = configparser.get('video_options', 'overlay_sense_data')
 do_overlay_gpsdata = configparser.get('video_options', 'overlay_gps_data')
-chosenpath =  configparser.get('general_options', 'file_path')
+chosen_path =  configparser.get('general_options', 'file_path')
+usb_gps_installed = configparser.get('gps_options', 'usb_gps')
+
 
 print ("Datalogger started")
 print ("Configuration settings")
@@ -25,15 +32,19 @@ print ("Pi camera vertical flip  = ",pi_camera_vertical_flip) # display the came
 print ("Pi camera horizontal flip  = ",pi_camera_horizontal_flip) # display the camera option setting on screen as a debug he$
 print ("Overlay sense data on video = ",do_overlay_sensedata) # display the config option for video overlay of sense data
 print ("Overlay GPS data on video = ",do_overlay_gpsdata) # display the config option for the video overlay of GPS data
+print (" GPS installed = ",usb_gps_installed) # display the config option for the USB BPS
 
 FILENAME = ""
 WRITE_FREQUENCY = 50
 
 ############################################ Libraries ############################################
 
+ 
 import sys # revisit to see if needed
 import os # used for the shutdown
 import time # used for time functions
+
+from datetime import datetime # for date and time function
 
 # Import and setup the camera if camera option set in config file
 
@@ -44,24 +55,26 @@ if pi_camera_installed == "yes":
 		camera.vflip = True
 	if pi_camera_horizontal_flip == "yes":
 		camera.hflip = True
+		
+# Import and setup the GPS if GPS option set in the config file		
+if usb_gps_installed == "yes":
 
-
-from sense_hat import SenseHat # for core sensehat functions
-from datetime import datetime # for date and time function
+	from gps3.agps3threaded import AGPS3mechanism
+	agps_thread = AGPS3mechanism()  # Instantiate AGPS3 Mechanisms
+	agps_thread.stream_data()  # From localhost (), or other hosts, by example, (host='gps.ddns.net')
+	agps_thread.run_thread()  # Throttle time to sleep after an empty lookup, default '()' 0.2 two tenths of a second
 
 ############################################ Functions ############################################
 
-def log_data ():
-  output_string = ",".join(str(value) for value in sense_data)
-  batch_data.append(output_string)
-
-def file_setup(filename):
+def file_setup(filename): # setup the CSV headers using the right options for any add-ons like GPS
   header  =["timestamp",
   "accel_x","accel_y","accel_z",
   "pitch","roll","yaw",
   "mag_x","mag_y","mag_z",
   "gyro_x","gyro_y","gyro_z",
   "temp_h","temp_p","humidity","pressure"]
+  if usb_gps_installed == "yes":
+  	header += "alt","lat","lon","speed"
 
   with open(filename,"w") as f:
       f.write(",".join(str(value) for value in header)+ "\n")
@@ -69,9 +82,8 @@ def file_setup(filename):
 def get_sense_data(): # Main function to get all the sense data
   global sense_overlay_data
   sense_data=[]
-
+  
   sense_data.append(datetime.now())
-
 
   acc = sense.get_accelerometer_raw()
   x = acc["x"]
@@ -84,7 +96,6 @@ def get_sense_data(): # Main function to get all the sense data
   pitch = o["pitch"]
   roll = o["roll"]
   sense_data.extend([pitch,roll,yaw])
-
 
   mag = sense.get_compass_raw()
   mag_x = mag["x"]
@@ -102,13 +113,35 @@ def get_sense_data(): # Main function to get all the sense data
   sense_data.append(sense.get_temperature_from_pressure())
   sense_data.append(sense.get_humidity())
   sense_data.append(sense.get_pressure())
-
-  sense_overlay_data = time.strftime("%H:%M:%S %d/%m/%Y") + " Accel " + str(round(y,2)) + " Corner " + str(round(x,2))
+  
+  sense_overlay_data = time.strftime("%H:%M:%S %d/%m/%Y") + " Acceleration " + str(round(y,2)) + " Cornering " + str(round(x,2))
  
   # print(sense_overlay_data)  #prints the overlay data on the screen, left to aid debugging if needed
 
   return sense_data
 
+def get_gps_data (): #function that gets the GPS data
+	global gps_overlay_data
+	gps_data=[]
+
+
+	# print(                   agps_thread.data_stream.time)
+	lat = format(agps_thread.data_stream.lat)
+	lon = format(agps_thread.data_stream.lon)
+	speed_str = format(agps_thread.data_stream.speed)
+	speed_f = float(speed_str)
+	speed= str(round(speed_f,0)) 	
+	alt = format(agps_thread.data_stream.alt)	
+
+
+	sense_data.extend([alt,lat,lon,speed])
+	
+	gps_overlay_data = " Altitude = "  + alt + " Speed = " + speed
+
+	print("GPS Data", gps_overlay_data)  #prints the overlay data on the screen, left to aid debugging if need
+  	
+	return gps_data
+  
 def joystick_push(event): # if stick is pressed toggle logging state by switching "value" 
 	global value
 	global running
@@ -124,19 +157,36 @@ def joystick_push(event): # if stick is pressed toggle logging state by switchin
     
 	while event.action=='held':
 		print("Button is held")
+		sense.show_letter("H",text_colour=[0, 0, 0], back_colour=[255,181,7])  # prints H on the matrix to indicate held
 		if time.time() > start + 4:
 			shutdown_pi()       
         
 def start_logging ():	
-	print ("Logging started")
+	print ("Logging started, press joystick button to stop")
 	global filename
 	sense.show_letter("L",text_colour=[0, 0, 0], back_colour=[0,255,0])
-	filename = "/media/usb/race_data_"+time.strftime("%Y%m%d-%H%M%S")+".csv"
+	filename =  "/media/usb/race_data_"+time.strftime("%Y%m%d-%H%M%S")+".csv"
 	file_setup(filename)
 	if pi_camera_installed == "yes":
 		camera.start_recording("/media/usb/race_video_"+time.strftime("%Y%m%d-%H%M%S")+".h264")   # starts the camera recording 
 
-
+def log_data ():
+	output_string = ",".join(str(value) for value in sense_data)
+	gps_output_string = ",".join(gps_data)
+	output_string += gps_output_string
+	batch_data.append(output_string)
+  
+def video_overlay ():
+	if do_overlay_sensedata == "yes": 
+		camera.annotate_background = True
+		if do_overlay_gpsdata == "yes":
+			print ("Annotate Sense + GPS")     
+			camera.annotate_text = sense_overlay_data+gps_overlay_data
+		else:	
+			print("Annotate Sense data only, no GPS")
+			camera.annotate_text = sense_overlay_data		
+	else:
+		print("Overlay disabled")
         
 def stop_logging ():
 	print("Logging stopped, still ready") # prints to the main screen
@@ -151,17 +201,6 @@ def shutdown_pi ():
 	os.system('shutdown now -h') # call the OS command to shutdown	 		
 
 
-def video_overlay ():
-	if do_overlay_sensedata == "yes": 
-		print ("overlay Sense data")
-	if do_overlay_gpsdata == "yes":
-		print ("overlay GPS data")
-	
-	camera.annotate_background = True
-	camera.annotate_text = sense_overlay_data
-
-
-      
 ################################################# Main Program #####################################
 
 print("Press Ctrl-C to quit")
@@ -169,14 +208,15 @@ print("Press Ctrl-C to quit")
 sense = SenseHat()
 batch_data= [] # creates an empty list called batch_data 
 sense.clear()  # blank the LED matrix  
-sense.show_letter("R",text_colour=[0, 0, 0], back_colour=[255,0,0])  # prints R on the matrix to indicate "Ready"
+sense.show_letter("R",text_colour=[0, 0, 0], back_colour=[255,181,7])  # prints R on the matrix to indicate "Ready"
+
 sense.stick.direction_middle = joystick_push  #call the callback (function) joystick_push if pressed at any time including in a loop
  
 value = 0 
 
 running = 1
 
-print("Ready") # prints to the main screen
+print("Ready, press sensehat jostick to start logging") # prints to the main screen
 
 while running: # Loop around until CRTL-C keyboard interrupt   
  
@@ -184,6 +224,7 @@ while running: # Loop around until CRTL-C keyboard interrupt
   
 	while value: # When we are logging
 		sense_data = get_sense_data()
+		gps_data = get_gps_data()
 		log_data()
 		video_overlay()
 
