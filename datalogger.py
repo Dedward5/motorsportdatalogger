@@ -128,7 +128,9 @@ def get_gps_data (): #function that gets the GPS data
 	# print(                   agps_thread.data_stream.time)
 	lat = format(agps_thread.data_stream.lat)
 	lon = format(agps_thread.data_stream.lon)
-	speed = format(agps_thread.data_stream.speed)
+	speed_str = format(agps_thread.data_stream.speed)
+	speed_f = float(speed_str)
+	speed= str(round(speed_f,0)) 	
 	alt = format(agps_thread.data_stream.alt)	
 
 
