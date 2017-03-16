@@ -5,9 +5,9 @@
 
 from sense_hat import SenseHat # for core sensehat functions #import this first so we can use sense hat display
 
-# sense = senseHat()
+sense = SenseHat()
 
-# sense.show_letter("s",text_colour=[0, 0, 0], back_colour=[255,0,0])  # prints ! on the matrix to indicate "starting up"
+sense.show_letter("s",text_colour=[0, 0, 0], back_colour=[255,0,0])  # prints ! on the matrix to indicate "starting up"
 
 ####################################### Configuration and  Settings ###############################
 
@@ -23,6 +23,8 @@ do_overlay_sensedata = configparser.get('video_options', 'overlay_sense_data')
 do_overlay_gpsdata = configparser.get('video_options', 'overlay_gps_data')
 chosen_path =  configparser.get('general_options', 'file_path')
 usb_gps_installed = configparser.get('gps_options', 'usb_gps')
+usb_mic_installed = configparser.get('video_options', 'usb_mic')
+do_video_preview = configparser.get('video_options', 'video_preview')
 
 
 print ("Datalogger started")
@@ -32,7 +34,9 @@ print ("Pi camera vertical flip  = ",pi_camera_vertical_flip) # display the came
 print ("Pi camera horizontal flip  = ",pi_camera_horizontal_flip) # display the camera option setting on screen as a debug he$
 print ("Overlay sense data on video = ",do_overlay_sensedata) # display the config option for video overlay of sense data
 print ("Overlay GPS data on video = ",do_overlay_gpsdata) # display the config option for the video overlay of GPS data
-print (" GPS installed = ",usb_gps_installed) # display the config option for the USB BPS
+print ("GPS installed = ",usb_gps_installed) # display the config option for the USB BPS
+print ("USB Microphone = ", usb_mic_installed) 
+# print ("Video Preview =", do_video_preview)  
 
 FILENAME = ""
 WRITE_FREQUENCY = 50
@@ -63,6 +67,12 @@ if usb_gps_installed == "yes":
 	agps_thread = AGPS3mechanism()  # Instantiate AGPS3 Mechanisms
 	agps_thread.stream_data()  # From localhost (), or other hosts, by example, (host='gps.ddns.net')
 	agps_thread.run_thread()  # Throttle time to sleep after an empty lookup, default '()' 0.2 two tenths of a second
+
+
+# import dependencies for Audio Recording
+import subprocess
+
+
 
 ############################################ Functions ############################################
 
@@ -124,17 +134,12 @@ def get_gps_data (): #function that gets the GPS data
 	global gps_overlay_data
 	gps_data=[]
 
-
-	# print(                   agps_thread.data_stream.time)
 	lat = format(agps_thread.data_stream.lat)
 	lon = format(agps_thread.data_stream.lon)
 	speed = format(agps_thread.data_stream.speed)
 	alt = format(agps_thread.data_stream.alt)	
-
 	sense_data.extend([alt,lat,lon,speed])
-	
 	gps_overlay_data = " Alt = "  + alt + " KPH = " + speed
-
 	print("GPS Data", gps_overlay_data)  #prints the overlay data on the screen, left to aid debugging if need
   	
 	return gps_data
@@ -161,11 +166,17 @@ def joystick_push(event): # if stick is pressed toggle logging state by switchin
 def start_logging ():	
 	print ("Logging started, press joystick button to stop")
 	global filename
+	global record_process
 	sense.show_letter("L",text_colour=[0, 0, 0], back_colour=[0,255,0])
 	filename =  "/media/usb/race_data_"+time.strftime("%Y%m%d-%H%M%S")+".csv"
 	file_setup(filename)
 	if pi_camera_installed == "yes":
+		camera.start_preview(alpha=200)
 		camera.start_recording("/media/usb/race_video_"+time.strftime("%Y%m%d-%H%M%S")+".h264")   # starts the camera recording 
+	if usb_mic_installed == "yes":	
+		arecord_cmd = "arecord -D plughw:1 -f cd /media/usb/race_audio"+time.strftime("%Y%m%d-%H%M%S")+".wav"
+		record_process = subprocess.Popen("exec " + arecord_cmd,stdout=subprocess.PIPE, shell=True)
+
 
 def log_data ():
 	output_string = ",".join(str(value) for value in sense_data)
@@ -175,22 +186,27 @@ def log_data ():
   
 def video_overlay ():
 	if do_overlay_sensedata == "yes": 
-		camera.annotate_background = True
+#		camera.annotate_background = True
 		if do_overlay_gpsdata == "yes":
-			print ("Annotate Sense + GPS")     
+			# print ("Annotate Sense + GPS")     
 			camera.annotate_text = sense_overlay_data+gps_overlay_data
 		else:	
-			print("Annotate Sense data only, no GPS")
+			# print("Annotate Sense data only, no GPS")
 			camera.annotate_text = sense_overlay_data		
 	else:
 		print("Overlay disabled")
         
 def stop_logging ():
 	print("Logging stopped, still ready") # prints to the main screen
-	sense.show_letter("R",text_colour=[0, 0, 0], back_colour=[255,0,0]) 
+
+	sense.show_letter("R",text_colour=[0, 0, 0], back_colour=[255,181,7]) 
 	if pi_camera_installed == "yes":
+		camera.stop_preview()
 		camera.stop_recording() # stops the camera from recording
-  		
+	if usb_mic_installed =="yes":
+		record_process.kill()
+		  	
+	
 def shutdown_pi ():
 	print ("Shutting down the Pi") # displays this on the main screen
 	sense.show_message("Shutting down the Pi", scroll_speed=0.02, text_colour=[255,255,255], back_colour=[0,0,0]) # show this text on the matrix
