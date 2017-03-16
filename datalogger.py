@@ -130,8 +130,6 @@ def get_gps_data (): #function that gets the GPS data
 	global gps_overlay_data
 	gps_data=[]
 
-
-	# print(                   agps_thread.data_stream.time)
 	lat = format(agps_thread.data_stream.lat)
 	lon = format(agps_thread.data_stream.lon)
 	speed = format(agps_thread.data_stream.speed)
