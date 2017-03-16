@@ -114,7 +114,7 @@ def get_sense_data(): # Main function to get all the sense data
   sense_data.append(sense.get_humidity())
   sense_data.append(sense.get_pressure())
   
-  sense_overlay_data = time.strftime("%H:%M:%S %d/%m/%Y") + " Acceleration " + str(round(y,2)) + " Cornering " + str(round(x,2))
+  sense_overlay_data = time.strftime("%H:%M:%S %d/%m/%Y") + " Accel " + str(round(y,2)) + " Corner " + str(round(x,2))
  
   # print(sense_overlay_data)  #prints the overlay data on the screen, left to aid debugging if needed
 
@@ -128,15 +128,12 @@ def get_gps_data (): #function that gets the GPS data
 	# print(                   agps_thread.data_stream.time)
 	lat = format(agps_thread.data_stream.lat)
 	lon = format(agps_thread.data_stream.lon)
-	speed_str = format(agps_thread.data_stream.speed)
-	speed_f = float(speed_str)
-	speed= str(round(speed_f,0)) 	
+	speed = format(agps_thread.data_stream.speed)
 	alt = format(agps_thread.data_stream.alt)	
-
 
 	sense_data.extend([alt,lat,lon,speed])
 	
-	gps_overlay_data = " Altitude = "  + alt + " Speed = " + speed
+	gps_overlay_data = " Alt = "  + alt + " KPH = " + speed
 
 	print("GPS Data", gps_overlay_data)  #prints the overlay data on the screen, left to aid debugging if need
   	
