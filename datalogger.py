@@ -64,6 +64,12 @@ if usb_gps_installed == "yes":
 	agps_thread.stream_data()  # From localhost (), or other hosts, by example, (host='gps.ddns.net')
 	agps_thread.run_thread()  # Throttle time to sleep after an empty lookup, default '()' 0.2 two tenths of a second
 
+
+# import dependencies for Audio Recording
+import subprocess
+
+
+
 ############################################ Functions ############################################
 
 def file_setup(filename): # setup the CSV headers using the right options for any add-ons like GPS
@@ -164,11 +170,17 @@ def joystick_push(event): # if stick is pressed toggle logging state by switchin
 def start_logging ():	
 	print ("Logging started, press joystick button to stop")
 	global filename
+	global record_process
 	sense.show_letter("L",text_colour=[0, 0, 0], back_colour=[0,255,0])
 	filename =  "/media/usb/race_data_"+time.strftime("%Y%m%d-%H%M%S")+".csv"
 	file_setup(filename)
 	if pi_camera_installed == "yes":
 		camera.start_recording("/media/usb/race_video_"+time.strftime("%Y%m%d-%H%M%S")+".h264")   # starts the camera recording 
+	arecord_cmd = "arecord -D plughw:1 -f cd /media/usb/race_audio"+time.strftime("%Y%m%d-%H%M%S")+".wav"
+	record_process = subprocess.Popen("exec " + arecord_cmd,stdout=subprocess.PIPE, shell=True)
+
+
+	
 
 def log_data ():
 	output_string = ",".join(str(value) for value in sense_data)
@@ -191,6 +203,7 @@ def video_overlay ():
 def stop_logging ():
 	print("Logging stopped, still ready") # prints to the main screen
 	sense.show_letter("R",text_colour=[0, 0, 0], back_colour=[255,0,0]) 
+	record_process.kill()
 	if pi_camera_installed == "yes":
 		camera.stop_recording() # stops the camera from recording
   		
