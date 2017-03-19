@@ -7,7 +7,7 @@ from sense_hat import SenseHat # for core sensehat functions #import this first 
 
 sense = SenseHat()
 
-sense.show_letter("s",text_colour=[0, 0, 0], back_colour=[255,0,0])  # prints ! on the matrix to indicate "starting up"
+sense.show_letter("!",text_colour=[0, 0, 0], back_colour=[255,0,0])  # prints ! on the matrix to indicate "starting up"
 
 ####################################### Configuration and  Settings ###############################
 
@@ -77,7 +77,7 @@ import subprocess
 ############################################ Functions ############################################
 
 def file_setup(filename): # setup the CSV headers using the right options for any add-ons like GPS
-  header  =["timestamp",
+  header  =["runtime",
   "accel_x","accel_y","accel_z",
   "pitch","roll","yaw",
   "mag_x","mag_y","mag_z",
@@ -90,45 +90,47 @@ def file_setup(filename): # setup the CSV headers using the right options for an
       f.write(",".join(str(value) for value in header)+ "\n")
 
 def get_sense_data(): # Main function to get all the sense data
-  global sense_overlay_data
-  sense_data=[]
-  
-  sense_data.append(datetime.now())
+	global sense_overlay_data  
+	sense_data=[]
+  	
+	run_time = time.time() - start_time
+	sense_data.append(run_time)
 
-  acc = sense.get_accelerometer_raw()
-  x = acc["x"]
-  y = acc["y"]
-  z = acc["z"]
-  sense_data.extend([x,y,z])
+	acc = sense.get_accelerometer_raw()
+	x = acc["x"]
+	y = acc["y"]
+	z = acc["z"]
+	sense_data.extend([x,y,z])
 
-  o = sense.get_orientation()
-  yaw = o["yaw"]
-  pitch = o["pitch"]
-  roll = o["roll"]
-  sense_data.extend([pitch,roll,yaw])
+	o = sense.get_orientation()
+	yaw = o["yaw"]
+	pitch = o["pitch"]
+	roll = o["roll"]
+	sense_data.extend([pitch,roll,yaw])
 
-  mag = sense.get_compass_raw()
-  mag_x = mag["x"]
-  mag_y = mag["y"]
-  mag_z = mag["z"]
-  sense_data.extend([mag_x,mag_y,mag_z])
+	mag = sense.get_compass_raw()
+	mag_x = mag["x"]
+	mag_y = mag["y"]
+	mag_z = mag["z"]
+	sense_data.extend([mag_x,mag_y,mag_z])
 
-  gyro = sense.get_gyroscope_raw()
-  gyro_x = gyro["x"]
-  gyro_y = gyro["y"]
-  gyro_z = gyro["z"]
-  sense_data.extend([gyro_x,gyro_y,gyro_z])
+	gyro = sense.get_gyroscope_raw()
+	gyro_x = gyro["x"]
+	gyro_y = gyro["y"]
+	gyro_z = gyro["z"]
+	sense_data.extend([gyro_x,gyro_y,gyro_z])
 
-  sense_data.append(sense.get_temperature_from_humidity())
-  sense_data.append(sense.get_temperature_from_pressure())
-  sense_data.append(sense.get_humidity())
-  sense_data.append(sense.get_pressure())
-  
-  sense_overlay_data = time.strftime("%H:%M:%S %d/%m/%Y") + " Accel " + str(round(y,2)) + " Corner " + str(round(x,2))
+	sense_data.append(sense.get_temperature_from_humidity())
+	sense_data.append(sense.get_temperature_from_pressure())
+	sense_data.append(sense.get_humidity())
+	sense_data.append(sense.get_pressure())
+	
+	#sense_overlay_data = time.strftime("%H:%M:%S %d/%m/%Y") + " Accel " + str(round(y,2)) + " Corner " + str(round(x,2))
+	sense_overlay_data = str(round(run_time,2)) + " Accel " + str(round(y,2)) + " Corner " + str(round(x,2))
  
-  # print(sense_overlay_data)  #prints the overlay data on the screen, left to aid debugging if needed
+	print(sense_overlay_data)  #prints the overlay data on the screen, left to aid debugging if needed
 
-  return sense_data
+	return sense_data
 
 def get_gps_data (): #function that gets the GPS data
 	global gps_overlay_data
@@ -141,14 +143,15 @@ def get_gps_data (): #function that gets the GPS data
 	sense_data.extend([alt,lat,lon,speed])
 	gps_overlay_data = " Alt = "  + alt + " KPH = " + speed
 	print("GPS Data", gps_overlay_data)  #prints the overlay data on the screen, left to aid debugging if need
-  	
+ 
 	return gps_data
   
 def joystick_push(event): # if stick is pressed toggle logging state by switching "value" 
 	global value
 	global running
 	# global filename
-	start = time.time()
+	global start_time
+	start_time  = time.time()
 	if event.action=='released':
 		time.sleep(0.5) #wait half a second to reduce button bounce
 		value = (1, 0)[value] 
@@ -160,7 +163,7 @@ def joystick_push(event): # if stick is pressed toggle logging state by switchin
 	while event.action=='held':
 		print("Button is held")
 		sense.show_letter("H",text_colour=[0, 0, 0], back_colour=[255,181,7])  # prints H on the matrix to indicate held
-		if time.time() > start + 4:
+		if time.time() > start_time + 4:
 			shutdown_pi()       
         
 def start_logging ():	
