@@ -126,7 +126,7 @@ def get_sense_data(): # Main function to get all the sense data
 	sense_data.append(sense.get_pressure())
 	
 	#sense_overlay_data = time.strftime("%H:%M:%S %d/%m/%Y") + " Accel " + str(round(y,2)) + " Corner " + str(round(x,2))
-	sense_overlay_data = str(round(run_time,2)) + " Accel " + str(round(y,2)) + " Corner " + str(round(x,2))
+	sense_overlay_data ="Log time " + str(round(run_time,2)) + " Accel " + str(round(y,2)) + " Corner " + str(round(x,2))
  
 	print(sense_overlay_data)  #prints the overlay data on the screen, left to aid debugging if needed
 
@@ -141,7 +141,7 @@ def get_gps_data (): #function that gets the GPS data
 	speed = format(agps_thread.data_stream.speed)
 	alt = format(agps_thread.data_stream.alt)	
 	sense_data.extend([alt,lat,lon,speed])
-	gps_overlay_data = " Alt = "  + alt + " KPH = " + speed
+	gps_overlay_data =  " M/Ss = " + speed
 	print("GPS Data", gps_overlay_data)  #prints the overlay data on the screen, left to aid debugging if need
  
 	return gps_data
