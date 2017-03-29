@@ -84,7 +84,7 @@ def file_setup(filename): # setup the CSV headers using the right options for an
   "gyro_x","gyro_y","gyro_z",
   "temp_h","temp_p","humidity","pressure"]
   if usb_gps_installed == "yes":
-  	header += "alt","lat","lon","speed"
+  	header += "alt","lat","lon","speed,gpstime"
 
   with open(filename,"w") as f:
       f.write(",".join(str(value) for value in header)+ "\n")
@@ -93,7 +93,7 @@ def get_sense_data(): # Main function to get all the sense data
 	global sense_overlay_data  
 	sense_data=[]
   	
-	run_time = time.time() - start_time
+	log_time = time.time() - start_time
 	sense_data.append(run_time)
 
 	acc = sense.get_accelerometer_raw()
@@ -125,8 +125,20 @@ def get_sense_data(): # Main function to get all the sense data
 	sense_data.append(sense.get_humidity())
 	sense_data.append(sense.get_pressure())
 	
+
+	# magic timer: This starts a timer if the PI sees an accelleration over a value e.g. a launch.
+	if not_launched:
+		if y > 0.2 # check y accellerometer to see if you are launching 
+			launch_time = time.time() # record the launch time
+			not_launched = 0 # set the variable to say you are launched in this logging session
+		else:
+		run_time = 000.00 # if not launching you are stationary		
+	else:
+		run_time = time.time()-launch_time # you must be launched so the timer is now - launch time 
+	
+
 	#sense_overlay_data = time.strftime("%H:%M:%S %d/%m/%Y") + " Accel " + str(round(y,2)) + " Corner " + str(round(x,2))
-	sense_overlay_data ="Log time " + str(round(run_time,2)) + " Accel " + str(round(y,2)) + " Corner " + str(round(x,2))
+	sense_overlay_data ="Run time " + str(round(run_time,2)) + " Accel " + str(round(y,2)) + " Corner " + str(round(x,2))
  
 	print(sense_overlay_data)  #prints the overlay data on the screen, left to aid debugging if needed
 
@@ -134,14 +146,17 @@ def get_sense_data(): # Main function to get all the sense data
 
 def get_gps_data (): #function that gets the GPS data
 	global gps_overlay_data
-	gps_data=[]
+	# gps_data=[]
 
 	lat = format(agps_thread.data_stream.lat)
 	lon = format(agps_thread.data_stream.lon)
 	speed = format(agps_thread.data_stream.speed)
 	alt = format(agps_thread.data_stream.alt)	
-	sense_data.extend([alt,lat,lon,speed])
-	gps_overlay_data =  " M/Ss = " + speed
+	gpstime = format(agps_thread.data.data_stream.time)
+	sense_data.extend([alt,lat,lon,speed,gpstime])
+
+	gps_overlay_data =  " M/Ss = " + speed + "GPS Time  " + gpstime
+
 	print("GPS Data", gps_overlay_data)  #prints the overlay data on the screen, left to aid debugging if need
  
 	return gps_data
@@ -170,6 +185,8 @@ def start_logging ():
 	print ("Logging started, press joystick button to stop")
 	global filename
 	global record_process
+	global not_launched
+	not_launched = 1
 	sense.show_letter("L",text_colour=[0, 0, 0], back_colour=[0,255,0])
 	filename =  "/media/usb/race_data_"+time.strftime("%Y%m%d-%H%M%S")+".csv"
 	file_setup(filename)
