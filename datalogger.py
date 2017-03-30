@@ -36,10 +36,12 @@ print ("Overlay sense data on video = ",do_overlay_sensedata) # display the conf
 print ("Overlay GPS data on video = ",do_overlay_gpsdata) # display the config option for the video overlay of GPS data
 print ("GPS installed = ",usb_gps_installed) # display the config option for the USB BPS
 print ("USB Microphone = ", usb_mic_installed) 
-# print ("Video Preview =", do_video_preview)  
+print ("Video Preview =", do_video_preview)  
 
 FILENAME = ""
 WRITE_FREQUENCY = 50
+
+
 
 ############################################ Libraries ############################################
 
@@ -71,7 +73,7 @@ if usb_gps_installed == "yes":
 
 # import dependencies for Audio Recording
 import subprocess
-
+from decimal import *
 
 
 ############################################ Functions ############################################
@@ -84,78 +86,85 @@ def file_setup(filename): # setup the CSV headers using the right options for an
   "gyro_x","gyro_y","gyro_z",
   "temp_h","temp_p","humidity","pressure"]
   if usb_gps_installed == "yes":
-  	header += "alt","lat","lon","speed,gpstime"
+  	header += "alt","lat","lon","speed","gpstime"
 
   with open(filename,"w") as f:
       f.write(",".join(str(value) for value in header)+ "\n")
 
 def get_sense_data(): # Main function to get all the sense data
 	global sense_overlay_data  
+	global moving
+	global launch_time
+	global run_time
 	sense_data=[]
   	
 	log_time = time.time() - start_time
-	sense_data.append(run_time)
 
 	acc = sense.get_accelerometer_raw()
 	x = acc["x"]
 	y = acc["y"]
 	z = acc["z"]
-	sense_data.extend([x,y,z])
 
 	o = sense.get_orientation()
 	yaw = o["yaw"]
 	pitch = o["pitch"]
 	roll = o["roll"]
-	sense_data.extend([pitch,roll,yaw])
 
 	mag = sense.get_compass_raw()
 	mag_x = mag["x"]
 	mag_y = mag["y"]
 	mag_z = mag["z"]
-	sense_data.extend([mag_x,mag_y,mag_z])
 
 	gyro = sense.get_gyroscope_raw()
 	gyro_x = gyro["x"]
 	gyro_y = gyro["y"]
 	gyro_z = gyro["z"]
-	sense_data.extend([gyro_x,gyro_y,gyro_z])
+	
+	# Magic timer: This starts a timer if the PI sees an accelleration over a value e.g. a launch.
+	print(moving)
 
+	if moving == 1:
+		if y > 0.2: # check y accellerometer to see if you are launching 
+			launch_time = time.time() # record the launch time
+			moving = 0 # set the variable to say you are launched in this logging session
+			run_time = 00.00
+		else:
+			run_time = 00.00  # if not launching you are stationary		
+	else:
+		run_time = time.time() - launch_time # you must be launched so the timer is now - launch time 
+	
+	# now write the sense data to the list
+	
+	sense_data.append(run_time)
+	sense_data.extend([x,y,z])
+	sense_data.extend([pitch,roll,yaw])
+	sense_data.extend([mag_x,mag_y,mag_z])
+	sense_data.extend([gyro_x,gyro_y,gyro_z])
 	sense_data.append(sense.get_temperature_from_humidity())
 	sense_data.append(sense.get_temperature_from_pressure())
 	sense_data.append(sense.get_humidity())
 	sense_data.append(sense.get_pressure())
-	
 
-	# magic timer: This starts a timer if the PI sees an accelleration over a value e.g. a launch.
-	if not_launched:
-		if y > 0.2 # check y accellerometer to see if you are launching 
-			launch_time = time.time() # record the launch time
-			not_launched = 0 # set the variable to say you are launched in this logging session
-		else:
-		run_time = 000.00 # if not launching you are stationary		
-	else:
-		run_time = time.time()-launch_time # you must be launched so the timer is now - launch time 
-	
-
-	#sense_overlay_data = time.strftime("%H:%M:%S %d/%m/%Y") + " Accel " + str(round(y,2)) + " Corner " + str(round(x,2))
 	sense_overlay_data ="Run time " + str(round(run_time,2)) + " Accel " + str(round(y,2)) + " Corner " + str(round(x,2))
  
-	print(sense_overlay_data)  #prints the overlay data on the screen, left to aid debugging if needed
+	print(sense_overlay_data)  # prints the overlay data on the screen, left to aid debugging if needed
 
 	return sense_data
 
 def get_gps_data (): #function that gets the GPS data
 	global gps_overlay_data
-	# gps_data=[]
+	gps_data=[]
 
 	lat = format(agps_thread.data_stream.lat)
 	lon = format(agps_thread.data_stream.lon)
 	speed = format(agps_thread.data_stream.speed)
 	alt = format(agps_thread.data_stream.alt)	
-	gpstime = format(agps_thread.data.data_stream.time)
-	sense_data.extend([alt,lat,lon,speed,gpstime])
+	gpstime = format(agps_thread.data_stream.time)[0:19]
+	mph = (float(speed) * 2.23694)
 
-	gps_overlay_data =  " M/Ss = " + speed + "GPS Time  " + gpstime
+	sense_data.extend([alt,lat,lon,speed,mph,gpstime])
+			
+	gps_overlay_data =  " MPH " + str(round(mph,2)) + " GPS Time " + gpstime
 
 	print("GPS Data", gps_overlay_data)  #prints the overlay data on the screen, left to aid debugging if need
  
@@ -185,8 +194,11 @@ def start_logging ():
 	print ("Logging started, press joystick button to stop")
 	global filename
 	global record_process
-	global not_launched
-	not_launched = 1
+	# global not_launched
+	global moving
+	moving = 1
+	print (moving)
+	batch_data.clear()
 	sense.show_letter("L",text_colour=[0, 0, 0], back_colour=[0,255,0])
 	filename =  "/media/usb/race_data_"+time.strftime("%Y%m%d-%H%M%S")+".csv"
 	file_setup(filename)
@@ -218,7 +230,7 @@ def video_overlay ():
         
 def stop_logging ():
 	print("Logging stopped, still ready") # prints to the main screen
-
+	batch_data.clear() #clear out any values in the list
 	sense.show_letter("R",text_colour=[0, 0, 0], back_colour=[255,181,7]) 
 	if pi_camera_installed == "yes":
 		camera.stop_preview()
@@ -237,7 +249,7 @@ def shutdown_pi ():
 ################################################# Main Program #####################################
 
 print("Press Ctrl-C to quit")
-
+global batch_data
 sense = SenseHat()
 batch_data= [] # creates an empty list called batch_data 
 sense.clear()  # blank the LED matrix  
