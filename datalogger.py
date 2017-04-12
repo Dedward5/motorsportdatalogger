@@ -25,6 +25,8 @@ chosen_path =  configparser.get('general_options', 'file_path')
 usb_gps_installed = configparser.get('gps_options', 'usb_gps')
 usb_mic_installed = configparser.get('video_options', 'usb_mic')
 do_video_preview = configparser.get('video_options', 'video_preview')
+launch_g = configparser.get('general_options', 'launch_threshold')
+log_revs = configparser.get('general_options', 'rpm_input')
 
 
 print ("Datalogger started")
@@ -37,6 +39,8 @@ print ("Overlay GPS data on video = ",do_overlay_gpsdata) # display the config o
 print ("GPS installed = ",usb_gps_installed) # display the config option for the USB BPS
 print ("USB Microphone = ", usb_mic_installed) 
 print ("Video Preview =", do_video_preview)  
+print ("Logs Revs =",log_revs)
+print ("Launch Threshold =",launch_g)
 
 FILENAME = ""
 WRITE_FREQUENCY = 50
@@ -76,6 +80,21 @@ import subprocess
 from decimal import *
 
 
+
+#import the GPIO functions for RPM sensing
+if log_revs == "yes":
+	import RPi.GPIO as GPIO
+	GPIO.setmode(GPIO.BCM)
+	GPIO.setup(18,GPIO.IN) #set up pin 18 for input 
+	# GPIO.add_event_detect(18, GPIO.RISING, callback=get_rpm)
+	# set the variables to 
+	global last_pulse
+	global car_rpm
+	last_pulse = time.time ()
+	car_rpm = 0
+
+
+ 
 ############################################ Functions ############################################
 
 def file_setup(filename): # setup the CSV headers using the right options for any add-ons like GPS
@@ -151,7 +170,19 @@ def get_sense_data(): # Main function to get all the sense data
 
 	return sense_data
 
-def get_gps_data (): #function that gets the GPS data
+def get_rpm (): # this is called as a callback if RMP enabled
+	global last_pulse
+	global car_rpm
+	global rpm_overlay_data
+	pulse_gap = time.time() - last_pulse
+	last_pulse = time.time ()
+	car_rpm = int(0.5 / pulse_gap)
+
+	sense_data.extend([car_rpm])
+	rpm_overlay_data =  " RPMsss " + car_rpm
+	print (rpm_overlay_data)
+
+def get_gps_data (): # function that gets the GPS data
 	global gps_overlay_data
 	gps_data=[]
 
@@ -160,15 +191,19 @@ def get_gps_data (): #function that gets the GPS data
 	speed = format(agps_thread.data_stream.speed)
 	alt = format(agps_thread.data_stream.alt)	
 	gpstime = format(agps_thread.data_stream.time)[0:19]
-	mph = (float(speed) * 2.23694)
-
+	try:
+		mph == (float(speed) * 2.23694)
+		
+	except:
+		mph=0
 	sense_data.extend([alt,lat,lon,speed,mph,gpstime])
 			
-	gps_overlay_data =  " MPH " + str(round(mph,2)) + " GPS Time " + gpstime
+	gps_overlay_data =  " MPH " + str(round(mph,2)) + " " + gpstime
 
 	print("GPS Data", gps_overlay_data)  #prints the overlay data on the screen, left to aid debugging if need
  
 	return gps_data
+
   
 def joystick_push(event): # if stick is pressed toggle logging state by switching "value" 
 	global value
@@ -222,6 +257,7 @@ def video_overlay ():
 		if do_overlay_gpsdata == "yes":
 			# print ("Annotate Sense + GPS")     
 			camera.annotate_text = sense_overlay_data+gps_overlay_data
+			
 		else:	
 			# print("Annotate Sense data only, no GPS")
 			camera.annotate_text = sense_overlay_data		
@@ -246,7 +282,7 @@ def shutdown_pi ():
 	os.system('shutdown now -h') # call the OS command to shutdown	 		
 
 
-################################################# Main Program #####################################
+################################################ Main Program #####################################
 
 print("Press Ctrl-C to quit")
 global batch_data
@@ -256,6 +292,10 @@ sense.clear()  # blank the LED matrix
 sense.show_letter("R",text_colour=[0, 0, 0], back_colour=[255,181,7])  # prints R on the matrix to indicate "Ready"
 
 sense.stick.direction_middle = joystick_push  #call the callback (function) joystick_push if pressed at any time including in a loop
+
+GPIO.add_event_detect(18, GPIO.RISING, callback=get_rpm)
+
+
  
 value = 0 
 
@@ -270,6 +310,7 @@ while running: # Loop around until CRTL-C keyboard interrupt
 	while value: # When we are logging
 		sense_data = get_sense_data()
 		gps_data = get_gps_data()
+		print ("rpm = ",car_rpm)
 		log_data()
 		video_overlay()
 
