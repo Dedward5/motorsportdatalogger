@@ -93,7 +93,7 @@ if log_revs == "yes":
 	last_pulse = time.time ()
 	car_rpm = 0
 
-
+		
  
 ############################################ Functions ############################################
 
@@ -170,17 +170,18 @@ def get_sense_data(): # Main function to get all the sense data
 
 	return sense_data
 
-def get_rpm (): # this is called as a callback if RMP enabled
+def get_rpm(channel): # this is called as a callback if RMP enabled
 	global last_pulse
 	global car_rpm
 	global rpm_overlay_data
 	pulse_gap = time.time() - last_pulse
 	last_pulse = time.time ()
-	car_rpm = int(0.5 / pulse_gap)
+	car_rpm = (60*int(0.5 / pulse_gap))
 
-	sense_data.extend([car_rpm])
-	rpm_overlay_data =  " RPMsss " + car_rpm
-	print (rpm_overlay_data)
+	print("RPM= ", car_rpm)
+	# sense_data.extend([car_rpm])
+	# rpm_overlay_data =  " RPMsss " + car_rpm
+	# print (rpm_overlay_data)
 
 def get_gps_data (): # function that gets the GPS data
 	global gps_overlay_data
