@@ -86,29 +86,42 @@ if log_revs == "yes":
 	import RPi.GPIO as GPIO
 	GPIO.setmode(GPIO.BCM)
 	GPIO.setup(18,GPIO.IN) #set up pin 18 for input 
-	# GPIO.add_event_detect(18, GPIO.RISING, callback=get_rpm)
+
 	# set the variables to 
 	global last_pulse
 	global car_rpm
+	global pulse_gap
 	last_pulse = time.time ()
 	car_rpm = 0
-
+	pulse_gap = 1
 		
  
 ############################################ Functions ############################################
 
-def file_setup(filename): # setup the CSV headers using the right options for any add-ons like GPS
-  header  =["runtime",
-  "accel_x","accel_y","accel_z",
-  "pitch","roll","yaw",
-  "mag_x","mag_y","mag_z",
-  "gyro_x","gyro_y","gyro_z",
-  "temp_h","temp_p","humidity","pressure"]
-  if usb_gps_installed == "yes":
-  	header += "alt","lat","lon","speed","gpstime"
 
-  with open(filename,"w") as f:
-      f.write(",".join(str(value) for value in header)+ "\n")
+def get_pulse_gap(channel): # this is called as a callback if RMP enabled
+	global last_pulse
+	global pulse_gap
+	#global rpm_overlay_data
+	pulse_gap = time.time() - last_pulse
+	last_pulse = time.time ()
+
+def file_setup(filename): # setup the CSV headers using the right options for any add-ons like GPS
+	header  =["runtime",
+	"accel_x","accel_y","accel_z",
+	"pitch","roll","yaw",
+	"mag_x","mag_y","mag_z",
+	"gyro_x","gyro_y","gyro_z",
+	"temp_h","temp_p","humidity","pressure"]
+	
+	if log_revs == "yes":
+		header+=",RPM"	
+		
+	if usb_gps_installed == "yes":
+		header += "alt","lat","lon","speed","gpstime"
+
+	with open(filename,"w") as f:
+		f.write(",".join(str(value) for value in header)+ "\n")
 
 def get_sense_data(): # Main function to get all the sense data
 	global sense_overlay_data  
@@ -164,24 +177,27 @@ def get_sense_data(): # Main function to get all the sense data
 	sense_data.append(sense.get_humidity())
 	sense_data.append(sense.get_pressure())
 
-	sense_overlay_data ="Run time " + str(round(run_time,2)) + " Accel " + str(round(y,2)) + " Corner " + str(round(x,2))
+	sense_overlay_data ="Time " + str(round(run_time,2)) + " Acc " + str(round(y,2)) + " Lat " + str(round(x,2))
  
 	print(sense_overlay_data)  # prints the overlay data on the screen, left to aid debugging if needed
 
 	return sense_data
 
-def get_rpm(channel): # this is called as a callback if RMP enabled
-	global last_pulse
-	global car_rpm
-	global rpm_overlay_data
-	pulse_gap = time.time() - last_pulse
-	last_pulse = time.time ()
-	car_rpm = (60*int(0.5 / pulse_gap))
 
-	print("RPM= ", car_rpm)
-	# sense_data.extend([car_rpm])
-	# rpm_overlay_data =  " RPMsss " + car_rpm
-	# print (rpm_overlay_data)
+def get_rpm_data ():
+	global pulse_gap
+	global rpm_overlay_data
+	try:
+		rpm_data = (60*int(0.5 / pulse_gap))
+	except:
+		rpm_data = 0
+
+	# print("RPM= ", rpm_data)
+	# sense_data.extend(rpm_data)
+	rpm_overlay_data =  " RPM " + str(rpm_data)
+	print (rpm_overlay_data)
+
+	return rpm_data
 
 def get_gps_data (): # function that gets the GPS data
 	global gps_overlay_data
@@ -249,18 +265,15 @@ def start_logging ():
 def log_data ():
 	output_string = ",".join(str(value) for value in sense_data)
 	gps_output_string = ",".join(gps_data)
+	output_string += str(rpm_data)
 	output_string += gps_output_string
 	batch_data.append(output_string)
   
 def video_overlay ():
 	if do_overlay_sensedata == "yes": 
-#		camera.annotate_background = True
 		if do_overlay_gpsdata == "yes":
-			# print ("Annotate Sense + GPS")     
-			camera.annotate_text = sense_overlay_data+gps_overlay_data
-			
+ 			camera.annotate_text = sense_overlay_data+rpm_overlay_data+gps_overlay_data
 		else:	
-			# print("Annotate Sense data only, no GPS")
 			camera.annotate_text = sense_overlay_data		
 	else:
 		print("Overlay disabled")
@@ -294,7 +307,7 @@ sense.show_letter("R",text_colour=[0, 0, 0], back_colour=[255,181,7])  # prints 
 
 sense.stick.direction_middle = joystick_push  #call the callback (function) joystick_push if pressed at any time including in a loop
 
-GPIO.add_event_detect(18, GPIO.RISING, callback=get_rpm)
+GPIO.add_event_detect(18, GPIO.RISING, callback=get_pulse_gap) # callback called if GPIO rising for RPM pulse
 
 
  
@@ -311,7 +324,7 @@ while running: # Loop around until CRTL-C keyboard interrupt
 	while value: # When we are logging
 		sense_data = get_sense_data()
 		gps_data = get_gps_data()
-		print ("rpm = ",car_rpm)
+		rpm_data = get_rpm_data()
 		log_data()
 		video_overlay()
 
