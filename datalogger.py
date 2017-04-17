@@ -91,21 +91,32 @@ if log_revs == "yes":
 	global last_pulse
 	global car_rpm
 	global pulse_gap
+	global last_rpm
+	rpm_data = 0
 	last_pulse = time.time ()
-	car_rpm = 0
 	pulse_gap = 1
+	last_rpm = 0
 		
  
 ############################################ Functions ############################################
 
 
 def get_pulse_gap(channel): # this is called as a callback if RMP enabled
+	# pulse_time = time.time()
 	global last_pulse
-	global pulse_gap
-	#global rpm_overlay_data
-	pulse_gap = time.time() - last_pulse
-	last_pulse = time.time ()
+	#global pulse_gap
+	global rpm_data
 
+	pulse_gap = time.time() - last_pulse
+	last_pulse = time.time()
+
+	rpm_one = 0.5 / pulse_gap
+	rpm_data = int(rpm_one*60)
+
+
+
+
+ 
 def file_setup(filename): # setup the CSV headers using the right options for any add-ons like GPS
 	header  =["runtime",
 	"accel_x","accel_y","accel_z",
@@ -115,10 +126,10 @@ def file_setup(filename): # setup the CSV headers using the right options for an
 	"temp_h","temp_p","humidity","pressure"]
 	
 	if log_revs == "yes":
-		header+=",RPM"	
+		header +=["rpm"]	
 		
 	if usb_gps_installed == "yes":
-		header += "alt","lat","lon","speed","gpstime"
+		header += "alt","lat","lon","mps","mph","gpstime"
 
 	with open(filename,"w") as f:
 		f.write(",".join(str(value) for value in header)+ "\n")
@@ -153,7 +164,7 @@ def get_sense_data(): # Main function to get all the sense data
 	gyro_z = gyro["z"]
 	
 	# Magic timer: This starts a timer if the PI sees an accelleration over a value e.g. a launch.
-	print(moving)
+	# print(moving)
 
 	if moving == 1:
 		if y > 0.2: # check y accellerometer to see if you are launching 
@@ -179,25 +190,29 @@ def get_sense_data(): # Main function to get all the sense data
 
 	sense_overlay_data ="Time " + str(round(run_time,2)) + " Acc " + str(round(y,2)) + " Lat " + str(round(x,2))
  
-	print(sense_overlay_data)  # prints the overlay data on the screen, left to aid debugging if needed
+	# print(sense_overlay_data)  # prints the overlay data on the screen, left to aid debugging if needed
 
 	return sense_data
 
 
 def get_rpm_data ():
-	global pulse_gap
 	global rpm_overlay_data
-	try:
-		rpm_data = (60*int(0.5 / pulse_gap))
-	except:
-		rpm_data = 0
+	global rpm_data
+	# rpm_data > 100:
+	#		if rpm_data  > (last_rpm+1500): 
+	#			print("RPM SPIKE!!!!!!!!!!!!!!!!!!!!!!!")
+	#			# rpm_data = last_rpm
+	#			last_rpm = rpm_data			
+	#	else:
+	#		last_rpm = rpm_data
+#
+#	except:
+#		rpm_data = 100
 
-	# print("RPM= ", rpm_data)
-	# sense_data.extend(rpm_data)
 	rpm_overlay_data =  " RPM " + str(rpm_data)
 	print (rpm_overlay_data)
 
-	return rpm_data
+	# return rpm_data
 
 def get_gps_data (): # function that gets the GPS data
 	global gps_overlay_data
@@ -213,11 +228,10 @@ def get_gps_data (): # function that gets the GPS data
 		
 	except:
 		mph=0
-	sense_data.extend([alt,lat,lon,speed,mph,gpstime])
-			
+	gps_data.extend([alt,lat,lon,speed,mph,gpstime])
 	gps_overlay_data =  " MPH " + str(round(mph,2)) + " " + gpstime
 
-	print("GPS Data", gps_overlay_data)  #prints the overlay data on the screen, left to aid debugging if need
+	# print("GPS Data", gps_overlay_data)  #prints the overlay data on the screen, left to aid debugging if need
  
 	return gps_data
 
@@ -239,17 +253,14 @@ def joystick_push(event): # if stick is pressed toggle logging state by switchin
 	while event.action=='held':
 		print("Button is held")
 		sense.show_letter("H",text_colour=[0, 0, 0], back_colour=[255,181,7])  # prints H on the matrix to indicate held
-		if time.time() > start_time + 4:
-			shutdown_pi()       
-        
+		shutdown_pi()       
+
 def start_logging ():	
 	print ("Logging started, press joystick button to stop")
 	global filename
 	global record_process
-	# global not_launched
 	global moving
 	moving = 1
-	print (moving)
 	batch_data.clear()
 	sense.show_letter("L",text_colour=[0, 0, 0], back_colour=[0,255,0])
 	filename =  "/media/usb/race_data_"+time.strftime("%Y%m%d-%H%M%S")+".csv"
@@ -263,10 +274,10 @@ def start_logging ():
 
 
 def log_data ():
-	output_string = ",".join(str(value) for value in sense_data)
-	gps_output_string = ",".join(gps_data)
-	output_string += str(rpm_data)
-	output_string += gps_output_string
+	sense_output_string = ",".join(str(value) for value in sense_data)
+	gps_output_string = ",".join(str(value) for value in gps_data)
+	rpm_string = ","  + str(rpm_data) + ","
+	output_string = sense_output_string + rpm_string + gps_output_string	
 	batch_data.append(output_string)
   
 def video_overlay ():
