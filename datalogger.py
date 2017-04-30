@@ -88,21 +88,21 @@ if log_revs == "yes":
 	GPIO.setup(18,GPIO.IN) #set up pin 18 for input 
 
 	# set the variables to 
-	global last_pulse
-	global car_rpm
-	global pulse_gap
-	global last_rpm
+	#global last_pulse
+	#global car_rpm
+	#global pulse_gap
+	#global last_rpm
 	rpm_data = 0
 	last_pulse = time.time ()
 	pulse_gap = 1
-	last_rpm = 0
+	# last_rpm = 0
 		
  
 ############################################ Functions ############################################
 
 
-def get_pulse_gap(channel): # this is called as a callback if RMP enabled
-	# pulse_time = time.time()
+def get_pulse_gap(channel): # this is called as a callback if RPM enabled
+	#pulse_time = time.time()
 	global last_pulse
 	#global pulse_gap
 	global rpm_data
@@ -110,8 +110,8 @@ def get_pulse_gap(channel): # this is called as a callback if RMP enabled
 	pulse_gap = time.time() - last_pulse
 	last_pulse = time.time()
 
-	rpm_one = 0.5 / pulse_gap
-	rpm_data = int(rpm_one*60)
+	rpm = 0.5 / pulse_gap
+	rpm_data = int(rpm*60)
 
 
 
@@ -188,7 +188,7 @@ def get_sense_data(): # Main function to get all the sense data
 	sense_data.append(sense.get_humidity())
 	sense_data.append(sense.get_pressure())
 
-	sense_overlay_data ="Time " + str(round(run_time,2)) + " Acc " + str(round(y,2)) + " Lat " + str(round(x,2))
+	sense_overlay_data ="Time " + str(round(run_time,2)) + " Acc-G " + str(round(y,2)) + " Lat-G " + str(round(x,2))
  
 	# print(sense_overlay_data)  # prints the overlay data on the screen, left to aid debugging if needed
 
@@ -224,12 +224,12 @@ def get_gps_data (): # function that gets the GPS data
 	alt = format(agps_thread.data_stream.alt)	
 	gpstime = format(agps_thread.data_stream.time)[0:19]
 	try:
-		mph == (float(speed) * 2.23694)
+		mph = float(speed) * 2.23694
 		
 	except:
 		mph=0
 	gps_data.extend([alt,lat,lon,speed,mph,gpstime])
-	gps_overlay_data =  " MPH " + str(round(mph,2)) + " " + gpstime
+	gps_overlay_data =  " MPH " + str(int(mph)) + " " + gpstime
 
 	# print("GPS Data", gps_overlay_data)  #prints the overlay data on the screen, left to aid debugging if need
  
