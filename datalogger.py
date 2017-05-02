@@ -84,33 +84,22 @@ from decimal import *
 #import the GPIO functions for RPM sensing
 if log_revs == "yes":
 	import RPi.GPIO as GPIO
-	import threading
+	#import threading
 	GPIO.setmode(GPIO.BCM)
 	GPIO.setup(18,GPIO.IN) #set up pin 18 for input 
 
 	# set the variables to 
-	global last_pulse
-	global rpm_data
-	global pulse_gap
-	#global last_rpm
-	#rpm_data = 0
-	last_pulse = time.time ()
-	pulse_gap = 1
+	# global last_pulse
+	# global rpm_data
+	# global pulse_gap
+	# global last_rpm
+	# rpm_data = 0
+	# last_pulse = time.time ()
+	# pulse_gap = 1
 	# last_rpm = 0
 		
  
 ############################################ Functions ############################################
-
-
-def get_pulse_gap(): # this funtion runs as a thread to read pulse gaps
-	global pulse_gap
-	global last_pulse
-	while True:
-		GPIO.wait_for_edge(18, GPIO.RISING)	
-		GPIO.wait_for_edge(18, GPIO.FALLING)
-		time_now = time.time()	
-		pulse_gap = time_now - last_pulse
-		last_pulse = time_now
 
  
 def file_setup(filename): # setup the CSV headers using the right options for any add-ons like GPS
@@ -184,7 +173,7 @@ def get_sense_data(): # Main function to get all the sense data
 	sense_data.append(sense.get_humidity())
 	sense_data.append(sense.get_pressure())
 
-	sense_overlay_data ="Time " + str(round(run_time,2)) + " Acc-G " + str(round(y,2)) + " Lat-G " + str(round(x,2))
+	sense_overlay_data ="Time " + '{:*<5}'.format(str(round(run_time,2))) + " Acc-G " +'{:*<5}'.format(str(round(y,2))) + " Lat-G " + '{:*<5}'.format(str(round(x,2)))
  
 	# print(sense_overlay_data)  # prints the overlay data on the screen, left to aid debugging if needed
 
@@ -194,25 +183,21 @@ def get_sense_data(): # Main function to get all the sense data
 def get_rpm_data ():
 	global rpm_overlay_data
 	global rpm_data
-	global pulse_gap
+	
+	GPIO.wait_for_edge(18, GPIO.RISING, timeout = 50)	
+	first_pulse = time.time()
+	GPIO.wait_for_edge(18, GPIO.RISING, timeout = 50)
+	second_pulse = time.time()	
+	pulse_gap = second_pulse - first_pulse
+
 	rpm = 0.5 /pulse_gap
 	rpm_data = int(rpm*60)
 
-	# rpm_data > 100:
-	#		if rpm_data  > (last_rpm+1500): 
-	#			print("RPM SPIKE!!!!!!!!!!!!!!!!!!!!!!!")
-	#			# rpm_data = last_rpm
-	#			last_rpm = rpm_data			
-	#	else:
-	#		last_rpm = rpm_data
-	#
-	#	except:
-	#		rpm_data = 100
 
-	rpm_overlay_data =  " RPM " + str(rpm_data)
+	rpm_overlay_data =  " RPM " + '{:*<4}'.format(str(rpm_data))
 	print (rpm_overlay_data)
 
-	# return rpm_data
+	return rpm_data
 
 def get_gps_data (): # function that gets the GPS data
 	global gps_overlay_data
@@ -229,7 +214,7 @@ def get_gps_data (): # function that gets the GPS data
 	except:
 		mph=0
 	gps_data.extend([alt,lat,lon,speed,mph,gpstime])
-	gps_overlay_data =  " MPH " + str(int(mph)) + " " + gpstime
+	gps_overlay_data =  " MPH " + '{:*<3}'.format(str(int(mph))) + " " + gpstime
 
 	# print("GPS Data", gps_overlay_data)  #prints the overlay data on the screen, left to aid debugging if need
  
@@ -260,7 +245,6 @@ def start_logging ():
 	global filename
 	global record_process
 	global moving
-	gap_thread.start() #start the thread to read rpm
 	moving = 1
 	batch_data.clear()
 	sense.show_letter("L",text_colour=[0, 0, 0], back_colour=[0,255,0])
@@ -295,7 +279,6 @@ def video_overlay ():
 def stop_logging ():
 	print("Logging stopped, still ready") # prints to the main screen
 	batch_data.clear() #clear out any values in the list
-	gap_thread.stop() #stop the thread that reads RPM
 	sense.show_letter("R",text_colour=[0, 0, 0], back_colour=[255,181,7]) 
 	if pi_camera_installed == "yes":
 		camera.stop_preview()
@@ -321,9 +304,6 @@ sense.clear()  # blank the LED matrix
 sense.show_letter("R",text_colour=[0, 0, 0], back_colour=[255,181,7])  # prints R on the matrix to indicate "Ready"
 
 sense.stick.direction_middle = joystick_push  #call the callback (function) joystick_push if pressed at any time including in a loop
-
-gap_thread = threading.Thread (target=get_pulse_gap, args=()) # setup the thread for reaing the pulse gap
-
  
 value = 0 
 
