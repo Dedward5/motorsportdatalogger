@@ -84,21 +84,11 @@ from decimal import *
 #import the GPIO functions for RPM sensing
 if log_revs == "yes":
 	import RPi.GPIO as GPIO
-	#import threading
 	GPIO.setmode(GPIO.BCM)
 	GPIO.setup(18,GPIO.IN) #set up pin 18 for input 
+	global last_rpm
+	last_rpm = 600 
 
-	# set the variables to 
-	# global last_pulse
-	# global rpm_data
-	# global pulse_gap
-	# global last_rpm
-	# rpm_data = 0
-	# last_pulse = time.time ()
-	# pulse_gap = 1
-	# last_rpm = 0
-		
- 
 ############################################ Functions ############################################
 
  
@@ -192,10 +182,11 @@ def get_rpm_data ():
 
 	rpm = 0.5 /pulse_gap
 	rpm_data = int(rpm*60)
-
-
+	if rpm_data > 8000 :
+		rpm_data = last_rpm
+	last_rpm = rpm_data
 	rpm_overlay_data =  " RPM " + '{:*<4}'.format(str(rpm_data))
-	print (rpm_overlay_data)
+	print (rpm_overlay_data) #for debugging, this prints the RPM data to the screen
 
 	return rpm_data
 
@@ -263,7 +254,7 @@ def log_data ():
 	sense_output_string = ",".join(str(value) for value in sense_data)
 	gps_output_string = ",".join(str(value) for value in gps_data)
 	rpm_string = ","  + str(rpm_data) + ","
-	print (rpm_data)
+	# print (rpm_data)
 	output_string = sense_output_string + rpm_string + gps_output_string	
 	batch_data.append(output_string)
   
