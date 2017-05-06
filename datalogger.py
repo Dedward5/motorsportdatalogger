@@ -251,9 +251,10 @@ def start_logging ():
 	
 	# if the camera is installed and works then start recording if not the say its not installed and carry on
 	if pi_camera_installed == "yes":
-		camera.start_preview(alpha=200) #shows camea on monior for debugging
 		camera.start_recording("/media/usb/race_video_"+time.strftime("%Y%m%d-%H%M%S")+".h264")   # starts the camera recording 
-			
+		if do_video_preview == "yes":
+			camera.start_preview(alpha=200) #shows camea on monior for debugging
+	
 	try: #try to start recording
 		if usb_mic_installed == "yes":	
 			arecord_cmd = "arecord -D plughw:1 -f cd /media/usb/race_audio"+time.strftime("%Y%m%d-%H%M%S")+".wav"
@@ -288,8 +289,10 @@ def stop_logging ():
 	batch_data.clear() #clear out any values in the list
 	sense.show_letter("R",text_colour=[0, 0, 0], back_colour=[255,181,7]) 
 	if pi_camera_installed == "yes":
-		camera.stop_preview()
 		camera.stop_recording() # stops the camera from recording
+		if do_video_preview == "yes":
+			camera.stop_preview()
+
 	if usb_mic_installed =="yes":
 		record_process.kill()
 		  	
