@@ -59,13 +59,20 @@ from datetime import datetime # for date and time function
 # Import and setup the camera if camera option set in config file
 
 if pi_camera_installed == "yes":
-	from picamera import PiCamera
-	camera = PiCamera()
-	if pi_camera_vertical_flip == "yes": 
-		camera.vflip = True
-	if pi_camera_horizontal_flip == "yes":
-		camera.hflip = True
-		
+
+	try:
+		from picamera import PiCamera
+		camera = PiCamera()
+		if pi_camera_vertical_flip == "yes": 
+			camera.vflip = True
+			if pi_camera_horizontal_flip == "yes":
+				camera.hflip = True
+	except:
+		pi_camera_installed = "no"		
+		print ("Camera Error!")
+		sense.show_message("Camera Error!",text_colour=[255,0,0], back_colour=[0,0,0])
+
+
 # Import and setup the GPS if GPS option set in the config file		
 if usb_gps_installed == "yes":
 
@@ -186,7 +193,7 @@ def get_rpm_data ():
 		rpm_data = last_rpm
 	last_rpm = rpm_data
 	rpm_overlay_data =  " RPM " + '{:*<4}'.format(str(rpm_data))
-	print (rpm_overlay_data) #for debugging, this prints the RPM data to the screen
+	# print (rpm_overlay_data) #for debugging, this prints the RPM data to the screen
 
 	return rpm_data
 
@@ -241,12 +248,18 @@ def start_logging ():
 	sense.show_letter("L",text_colour=[0, 0, 0], back_colour=[0,255,0])
 	filename =  "/media/usb/race_data_"+time.strftime("%Y%m%d-%H%M%S")+".csv"
 	file_setup(filename)
+	
+	# if the camera is installed and works then start recording if not the say its not installed and carry on
 	if pi_camera_installed == "yes":
-		camera.start_preview(alpha=200)
+		camera.start_preview(alpha=200) #shows camea on monior for debugging
 		camera.start_recording("/media/usb/race_video_"+time.strftime("%Y%m%d-%H%M%S")+".h264")   # starts the camera recording 
-	if usb_mic_installed == "yes":	
-		arecord_cmd = "arecord -D plughw:1 -f cd /media/usb/race_audio"+time.strftime("%Y%m%d-%H%M%S")+".wav"
-		record_process = subprocess.Popen("exec " + arecord_cmd,stdout=subprocess.PIPE, shell=True)
+			
+	try: #try to start recording
+		if usb_mic_installed == "yes":	
+			arecord_cmd = "arecord -D plughw:1 -f cd /media/usb/race_audio"+time.strftime("%Y%m%d-%H%M%S")+".wav"
+			record_process = subprocess.Popen("exec " + arecord_cmd,stdout=subprocess.PIPE, shell=True)
+	except:
+		sense.show_message("Microphone  Error!",text_colour=[255,0,0], back_colour=[0,0,0])
 
 
 def log_data ():
@@ -254,19 +267,22 @@ def log_data ():
 	sense_output_string = ",".join(str(value) for value in sense_data)
 	gps_output_string = ",".join(str(value) for value in gps_data)
 	rpm_string = ","  + str(rpm_data) + ","
-	# print (rpm_data)
 	output_string = sense_output_string + rpm_string + gps_output_string	
 	batch_data.append(output_string)
+	print (output_string) #prints the video overlay data to the screen for debug/testing 
   
 def video_overlay ():
-	if do_overlay_sensedata == "yes": 
-		if do_overlay_gpsdata == "yes":
- 			camera.annotate_text = sense_overlay_data+rpm_overlay_data+gps_overlay_data
-		else:	
-			camera.annotate_text = sense_overlay_data		
-	else:
-		print("Overlay disabled")
-        
+	try:
+		if do_overlay_sensedata == "yes": 
+			if do_overlay_gpsdata == "yes":
+ 				camera.annotate_text = sense_overlay_data+rpm_overlay_data+gps_overlay_data
+			else:	
+				camera.annotate_text = sense_overlay_data		
+		else:
+			print("Overlay disabled")
+	except:
+		print("Overlay error, is camera working?")
+ 
 def stop_logging ():
 	print("Logging stopped, still ready") # prints to the main screen
 	batch_data.clear() #clear out any values in the list
