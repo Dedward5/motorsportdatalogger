@@ -245,6 +245,14 @@ def start_logging ():
 	global moving
 	moving = 1
 	batch_data.clear()
+	
+	gps_set_time = agps_thread.data_stream.time
+	if gps_set_time !="n/a":
+		os.system('date -s %s' % gps_set_time)
+		print ("System time set to GPS time of ",gps_set_time)
+	else:
+		print ("Could not set system time from GPS !")
+
 	sense.show_letter("L",text_colour=[0, 0, 0], back_colour=[0,255,0])
 	filename =  "/media/usb/race_data_"+time.strftime("%Y%m%d-%H%M%S")+".csv"
 	file_setup(filename)
@@ -324,6 +332,7 @@ print("Ready, press sensehat jostick to start logging") # prints to the main scr
 while running: # Loop around until CRTL-C keyboard interrupt   
  
 	# print(".")  prints to the main screen after "Ready" not the postion of the comma
+	# print("GPS time is",agps_thread.data_stream.time) #debug line to see if GPS has picked up the time
   
 	while value: # When we are logging
 		sense_data = get_sense_data()
