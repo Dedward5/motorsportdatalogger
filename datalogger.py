@@ -170,7 +170,7 @@ def get_sense_data(): # Main function to get all the sense data
 	sense_data.append(sense.get_humidity())
 	sense_data.append(sense.get_pressure())
 
-	sense_overlay_data ="Time " + '{:*<5}'.format(str(round(run_time,2))) + " Acc-G " +'{:*<5}'.format(str(round(y,2))) + " Lat-G " + '{:*<5}'.format(str(round(x,2)))
+	sense_overlay_data ="Time " + '{: <5}'.format(str(round(run_time,2))) + " Acc-G " +'{: <5}'.format(str(round(y,2))) + " Lat-G " + '{: <5}'.format(str(round(x,2)))
  
 	# print(sense_overlay_data)  # prints the overlay data on the screen, left to aid debugging if needed
 
@@ -192,7 +192,7 @@ def get_rpm_data ():
 	if rpm_data > 8000 :
 		rpm_data = last_rpm
 	last_rpm = rpm_data
-	rpm_overlay_data =  " RPM " + '{:*<4}'.format(str(rpm_data))
+	rpm_overlay_data =  " RPM " + '{: <4}'.format(str(rpm_data))
 	# print (rpm_overlay_data) #for debugging, this prints the RPM data to the screen
 
 	return rpm_data
@@ -212,7 +212,7 @@ def get_gps_data (): # function that gets the GPS data
 	except:
 		mph=0
 	gps_data.extend([alt,lat,lon,speed,mph,gpstime])
-	gps_overlay_data =  " MPH " + '{:*<3}'.format(str(int(mph))) + " " + gpstime
+	gps_overlay_data =  " MPH " + '{: <3}'.format(str(int(mph))) + " " + gpstime
 
 	# print("GPS Data", gps_overlay_data)  #prints the overlay data on the screen, left to aid debugging if need
  
