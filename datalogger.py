@@ -58,19 +58,19 @@ from datetime import datetime # for date and time function
 
 # Import and setup the camera if camera option set in config file
 
-if pi_camera_installed == "yes":
+# if pi_camera_installed == "yes":
+#	try:
+from picamera import PiCamera
+camera = PiCamera()
 
-	try:
-		from picamera import PiCamera
-		camera = PiCamera()
-		if pi_camera_vertical_flip == "yes": 
-			camera.vflip = True
-			if pi_camera_horizontal_flip == "yes":
-				camera.hflip = True
-	except:
-		pi_camera_installed = "no"		
-		print ("Camera Error!")
-		sense.show_message("Camera Error!",text_colour=[255,0,0], back_colour=[0,0,0])
+#		if pi_camera_vertical_flip == "yes": 
+#			camera.vflip = True
+#		if pi_camera_horizontal_flip == "yes":
+#			camera.hflip = True
+#	except:
+#		pi_camera_installed = "no"		
+#		print ("Camera Error!")
+#		sense.show_message("Camera Error!",text_colour=[255,0,0], back_colour=[0,0,0])
 
 
 # Import and setup the GPS if GPS option set in the config file		
@@ -349,3 +349,4 @@ while running: # Loop around until CRTL-C keyboard interrupt
 				batch_data = []
 
   
+ 
