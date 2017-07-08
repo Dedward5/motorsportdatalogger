@@ -58,19 +58,19 @@ from datetime import datetime # for date and time function
 
 # Import and setup the camera if camera option set in config file
 
-if pi_camera_installed == "yes":
+# if pi_camera_installed == "yes":
+#	try:
+from picamera import PiCamera
+camera = PiCamera()
 
-	try:
-		from picamera import PiCamera
-		camera = PiCamera()
-		if pi_camera_vertical_flip == "yes": 
-			camera.vflip = True
-			if pi_camera_horizontal_flip == "yes":
-				camera.hflip = True
-	except:
-		pi_camera_installed = "no"		
-		print ("Camera Error!")
-		sense.show_message("Camera Error!",text_colour=[255,0,0], back_colour=[0,0,0])
+#		if pi_camera_vertical_flip == "yes": 
+#			camera.vflip = True
+#		if pi_camera_horizontal_flip == "yes":
+#			camera.hflip = True
+#	except:
+#		pi_camera_installed = "no"		
+#		print ("Camera Error!")
+#		sense.show_message("Camera Error!",text_colour=[255,0,0], back_colour=[0,0,0])
 
 
 # Import and setup the GPS if GPS option set in the config file		
@@ -170,7 +170,7 @@ def get_sense_data(): # Main function to get all the sense data
 	sense_data.append(sense.get_humidity())
 	sense_data.append(sense.get_pressure())
 
-	sense_overlay_data ="Time " + '{:*<5}'.format(str(round(run_time,2))) + " Acc-G " +'{:*<5}'.format(str(round(y,2))) + " Lat-G " + '{:*<5}'.format(str(round(x,2)))
+	sense_overlay_data ="Time " + '{: <5}'.format(str(round(run_time,2))) + " Acc-G " +'{: <5}'.format(str(round(y,2))) + " Lat-G " + '{: <5}'.format(str(round(x,2)))
  
 	# print(sense_overlay_data)  # prints the overlay data on the screen, left to aid debugging if needed
 
@@ -192,7 +192,7 @@ def get_rpm_data ():
 	if rpm_data > 8000 :
 		rpm_data = last_rpm
 	last_rpm = rpm_data
-	rpm_overlay_data =  " RPM " + '{:*<4}'.format(str(rpm_data))
+	rpm_overlay_data =  " RPM " + '{: <4}'.format(str(rpm_data))
 	# print (rpm_overlay_data) #for debugging, this prints the RPM data to the screen
 
 	return rpm_data
@@ -212,7 +212,7 @@ def get_gps_data (): # function that gets the GPS data
 	except:
 		mph=0
 	gps_data.extend([alt,lat,lon,speed,mph,gpstime])
-	gps_overlay_data =  " MPH " + '{:*<3}'.format(str(int(mph))) + " " + gpstime
+	gps_overlay_data =  " MPH " + '{: <3}'.format(str(int(mph))) + " " + gpstime
 
 	# print("GPS Data", gps_overlay_data)  #prints the overlay data on the screen, left to aid debugging if need
  
@@ -245,6 +245,14 @@ def start_logging ():
 	global moving
 	moving = 1
 	batch_data.clear()
+	
+	gps_set_time = agps_thread.data_stream.time
+	if gps_set_time !="n/a":
+		os.system('date -s %s' % gps_set_time)
+		print ("System time set to GPS time of ",gps_set_time)
+	else:
+		print ("Could not set system time from GPS !")
+
 	sense.show_letter("L",text_colour=[0, 0, 0], back_colour=[0,255,0])
 	filename =  "/media/usb/race_data_"+time.strftime("%Y%m%d-%H%M%S")+".csv"
 	file_setup(filename)
@@ -324,6 +332,7 @@ print("Ready, press sensehat jostick to start logging") # prints to the main scr
 while running: # Loop around until CRTL-C keyboard interrupt   
  
 	# print(".")  prints to the main screen after "Ready" not the postion of the comma
+	# print("GPS time is",agps_thread.data_stream.time) #debug line to see if GPS has picked up the time
   
 	while value: # When we are logging
 		sense_data = get_sense_data()
@@ -340,3 +349,4 @@ while running: # Loop around until CRTL-C keyboard interrupt
 				batch_data = []
 
   
+ 
