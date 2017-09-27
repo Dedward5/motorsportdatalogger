@@ -3,9 +3,9 @@
 #
 # Find the project on GitHUb at https://github.com/Dedward5/motorsportdatalogger
 
-import time
+# import time
 
-time.sleep(5) # added to dealy load for warmup
+# time.sleep(5) # added to dealy load for warmup
 
 
 from sense_hat import SenseHat # for core sensehat functions #import this first so we can use sense hat display
@@ -48,7 +48,7 @@ print ("Logs Revs =",log_revs)
 print ("Launch Threshold =",launch_g)
 
 FILENAME = ""
-WRITE_FREQUENCY = 20
+WRITE_FREQUENCY = 50
 
 
 
@@ -57,7 +57,7 @@ WRITE_FREQUENCY = 20
  
 import sys # revisit to see if needed
 import os # used for the shutdown
-# import time # used for time functions
+import time # used for time functions
 
 from datetime import datetime # for date and time function
 
@@ -200,7 +200,7 @@ def get_rpm_data ():
 	rpm_overlay_data =  " RPM " + '{: <4}'.format(str(rpm_data))
 	# print (rpm_overlay_data) #for debugging, this prints the RPM data to the screen
 
-	return rpm_data
+ 	return rpm_data
 
 def get_gps_data (): # function that gets the GPS data
 	global gps_overlay_data

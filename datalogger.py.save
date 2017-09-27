@@ -3,11 +3,6 @@
 #
 # Find the project on GitHUb at https://github.com/Dedward5/motorsportdatalogger
 
-import time
-
-time.sleep(5) # added to dealy load for warmup
-
-
 from sense_hat import SenseHat # for core sensehat functions #import this first so we can use sense hat display
 
 sense = SenseHat()
@@ -48,7 +43,7 @@ print ("Logs Revs =",log_revs)
 print ("Launch Threshold =",launch_g)
 
 FILENAME = ""
-WRITE_FREQUENCY = 20
+WRITE_FREQUENCY = 50
 
 
 
@@ -57,7 +52,7 @@ WRITE_FREQUENCY = 20
  
 import sys # revisit to see if needed
 import os # used for the shutdown
-# import time # used for time functions
+import time # used for time functions
 
 from datetime import datetime # for date and time function
 
@@ -233,13 +228,11 @@ def joystick_push(event): # if stick is pressed toggle logging state by switchin
 	if event.action=='released':
 	# time.sleep(0.5) #wait half a second to reduce button bounce
 		value = (1, 0)[value] 
-		time.sleep(0.1) #wait half a second to reduce button bounce
-              
+ 		time.sleep(0.1) #wait half a second to reduce button bounce  
 		if value == 1:
 			start_logging() 
 		else:
 			stop_logging()	
-    
 	while event.action=='held':
 		print("Button is held")
 		sense.show_letter("H",text_colour=[0, 0, 0], back_colour=[255,181,7])  # prints H on the matrix to indicate held
