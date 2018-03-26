@@ -192,8 +192,19 @@ def get_rpm_data ():
 	second_pulse = time.time()	
 	pulse_gap = second_pulse - first_pulse
 
-	rpm = 0.5 /pulse_gap
+	try:
+		rpm = 0.5 /pulse_gap
+	
+	except:
+		# see if there is a devide by zero errror and just fudge the RPM
+		# this will make RPM so high it gets ignored.
+		rpm = 1000
+	
+	
 	rpm_data = int(rpm*60)
+	
+		
+
 	if rpm_data > 8000 :
 		rpm_data = last_rpm
 	last_rpm = rpm_data
