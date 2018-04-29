@@ -64,6 +64,7 @@ from datetime import datetime # for date and time function
 
 # Import and setup the camera if camera option set in config file
 
+
 if pi_camera_installed == "yes":
 	try:
 		from picamera import PiCamera
@@ -77,6 +78,7 @@ if pi_camera_installed == "yes":
 		pi_camera_installed = "no"		
 		print ("Camera Error!")
 		sense.show_message("Camera Error!",scroll_speed=0.02, text_colour=[255,0,0], back_colour=[0,0,0])
+
 
 
 # Import and setup the GPS if GPS option set in the config file		
@@ -215,7 +217,9 @@ def get_rpm_data ():
 		rpm_data = last_rpm
 	last_rpm = rpm_data
 	rpm_overlay_data =  " RPM " + '{: <4}'.format(str(rpm_data))
+
 	print (rpm_overlay_data) #for debugging, this prints the RPM data to the screen
+
 
 	return rpm_data
 
