@@ -5,14 +5,15 @@
 
 import time
 
-time.sleep(5) # added to dealy load for warmup
-
 
 from sense_hat import SenseHat # for core sensehat functions #import this first so we can use sense hat display
 
 sense = SenseHat()
 
 sense.show_letter("!",text_colour=[0, 0, 0], back_colour=[255,0,0])  # prints ! on the matrix to indicate "starting up"
+
+time.sleep(5) # added to dealy load for warmup
+
 
 ####################################### Configuration and  Settings ###############################
 
@@ -63,29 +64,35 @@ from datetime import datetime # for date and time function
 
 # Import and setup the camera if camera option set in config file
 
-# if pi_camera_installed == "yes":
-#	try:
-from picamera import PiCamera
-camera = PiCamera()
+if pi_camera_installed == "yes":
+	try:
+		from picamera import PiCamera
+		camera = PiCamera()
 
-#		if pi_camera_vertical_flip == "yes": 
-#			camera.vflip = True
-#		if pi_camera_horizontal_flip == "yes":
-#			camera.hflip = True
-#	except:
-#		pi_camera_installed = "no"		
-#		print ("Camera Error!")
-#		sense.show_message("Camera Error!",text_colour=[255,0,0], back_colour=[0,0,0])
+		if pi_camera_vertical_flip == "yes": 
+			camera.vflip = True
+		if pi_camera_horizontal_flip == "yes":
+			camera.hflip = True
+	except:
+		pi_camera_installed = "no"		
+		print ("Camera Error!")
+		sense.show_message("Camera Error!",scroll_speed=0.02, text_colour=[255,0,0], back_colour=[0,0,0])
 
 
 # Import and setup the GPS if GPS option set in the config file		
 if usb_gps_installed == "yes":
-
-	from gps3.agps3threaded import AGPS3mechanism
-	agps_thread = AGPS3mechanism()  # Instantiate AGPS3 Mechanisms
-	agps_thread.stream_data()  # From localhost (), or other hosts, by example, (host='gps.ddns.net')
-	agps_thread.run_thread()  # Throttle time to sleep after an empty lookup, default '()' 0.2 two tenths of a second
-
+	
+	try:
+		print("Installing GPS")
+		from gps3.agps3threaded import AGPS3mechanism
+		agps_thread = AGPS3mechanism()  # Instantiate AGPS3 Mechanisms
+		agps_thread.stream_data()  # From localhost (), or other hosts, by example, (host='gps.ddns.net')
+		agps_thread.run_thread()  # Throttle time to sleep after an empty lookup, default '()' 0.2 two tenths of a second
+	except:
+		usb_gps_installed = "no"
+		print ("GPS Error, Check Connection!")
+		sense.show_message("GPS Error!",scroll_speed=0.02, text_colour=[255,0,0], back_colour=[0,0,0])
+		
 
 # import dependencies for Audio Recording
 import subprocess
@@ -185,7 +192,7 @@ def get_sense_data(): # Main function to get all the sense data
 def get_rpm_data ():
 	global rpm_overlay_data
 	global rpm_data
-	
+	global last_rpm
 	GPIO.wait_for_edge(18, GPIO.RISING, timeout = 50)	
 	first_pulse = time.time()
 	GPIO.wait_for_edge(18, GPIO.RISING, timeout = 50)
@@ -197,19 +204,18 @@ def get_rpm_data ():
 	
 	except:
 		# see if there is a devide by zero errror and just fudge the RPM
-		# this will make RPM so high it gets ignored.
-		rpm = 1000
+		# this will make RPM = 600.
+		rpm = 10
 	
 	
 	rpm_data = int(rpm*60)
 	
-		
 
 	if rpm_data > 8000 :
 		rpm_data = last_rpm
 	last_rpm = rpm_data
 	rpm_overlay_data =  " RPM " + '{: <4}'.format(str(rpm_data))
-	# print (rpm_overlay_data) #for debugging, this prints the RPM data to the screen
+	print (rpm_overlay_data) #for debugging, this prints the RPM data to the screen
 
 	return rpm_data
 
@@ -230,7 +236,7 @@ def get_gps_data (): # function that gets the GPS data
 	gps_data.extend([alt,lat,lon,speed,mph,gpstime])
 	gps_overlay_data =  " MPH " + '{: <3}'.format(str(int(mph))) + " " + gpstime
 
-	# print("GPS Data", gps_overlay_data)  #prints the overlay data on the screen, left to aid debugging if need
+	print("GPS Data", gps_overlay_data)  #prints the overlay data on the screen, left to aid debugging if need
  
 	return gps_data
 
@@ -238,11 +244,12 @@ def get_gps_data (): # function that gets the GPS data
 def joystick_push(event): # if stick is pressed toggle logging state by switching "value" 
 	global value
 	global running
-	# global filename
+	global hold_wait	
 	global start_time
 	start_time  = time.time()
 	if event.action=='released':
 	# time.sleep(0.5) #wait half a second to reduce button bounce
+		hold_wait = 1 # Resets the wait counter for hold-to-shutdown	
 		value = (1, 0)[value] 
 		time.sleep(0.1) #wait half a second to reduce button bounce
               
@@ -251,10 +258,17 @@ def joystick_push(event): # if stick is pressed toggle logging state by switchin
 		else:
 			stop_logging()	
     
-	while event.action=='held':
+	if event.action=='held':
 		print("Button is held")
 		sense.show_letter("H",text_colour=[0, 0, 0], back_colour=[255,181,7])  # prints H on the matrix to indicate held
-		shutdown_pi()       
+		hold_wait +=1
+		print(hold_wait)
+		if hold_wait == 50:
+			shutdown_pi()       
+		
+
+
+
 
 def start_logging ():	
 	print ("Logging started, press joystick button to stop")
@@ -325,6 +339,7 @@ def stop_logging ():
 	
 def shutdown_pi ():
 	print ("Shutting down the Pi") # displays this on the main screen
+	stop_logging()
 	sense.show_message("Shutting down the Pi", scroll_speed=0.02, text_colour=[255,255,255], back_colour=[0,0,0]) # show this text on the matrix
 	sense.clear()  # blank the LED matrix
 	os.system('shutdown now -h') # call the OS command to shutdown	 		
@@ -334,6 +349,8 @@ def shutdown_pi ():
 
 print("Press Ctrl-C to quit")
 global batch_data
+global count
+
 sense = SenseHat()
 batch_data= [] # creates an empty list called batch_data 
 sense.clear()  # blank the LED matrix  
@@ -342,8 +359,8 @@ sense.show_letter("R",text_colour=[0, 0, 0], back_colour=[255,181,7])  # prints 
 sense.stick.direction_middle = joystick_push  #call the callback (function) joystick_push if pressed at any time including in a loop
  
 value = 0 
-
 running = 1
+hold_wait = 1
 
 print("Ready, press sensehat jostick to start logging") # prints to the main screen
 
@@ -353,6 +370,7 @@ while running: # Loop around until CRTL-C keyboard interrupt
 	# print("GPS time is",agps_thread.data_stream.time) #debug line to see if GPS has picked up the time
   
 	while value: # When we are logging
+		sense.show_letter("L",text_colour=[0, 0, 0], back_colour=[0,255,0])
 		sense_data = get_sense_data()
 		gps_data = get_gps_data()
 		rpm_data = get_rpm_data()
@@ -360,6 +378,7 @@ while running: # Loop around until CRTL-C keyboard interrupt
 		video_overlay()
 
 		if len(batch_data) >= WRITE_FREQUENCY:
+			sense.show_letter("W",text_colour=[0, 0, 0], back_colour=[0,255,0])
 			print("Writing to file")
 			with open(filename,"a") as f:
 				for line in batch_data:
